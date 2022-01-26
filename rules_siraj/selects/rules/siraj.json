@@ -1,0 +1,2487 @@
+{
+  "reportCategory":{
+    "table":"report_categorie",
+    "auth":[],
+    "columns":{
+      "id":{
+        "type":"primary",
+        "col":"id"
+      },
+      "Name":{
+        "type":"varchar",
+        "col":"intitule"
+      },
+      "Icon":{
+        "type":"varchar",
+        "col":"icon"
+      }
+    },
+    "name":"Catégories de rapports"
+  },
+  "Reports": {
+    "table": "v_reports",
+    "auth": [],
+    "columns":{
+      "id":{
+        "type":"primary",
+        "col":"idReport"
+      },
+      "name":{
+        "type":"varchar",
+        "col":"name"
+      },
+      "hash":{
+        "type":"varchar(255)",
+        "col":"hash"
+      },
+      "idCategory":{
+        "type":"foreign",
+        "col":"idCategorie",
+        "foreign":{
+          "table":"report_categorie",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Categorie":{
+        "type":"varchar(20)",
+        "col":"categorie"
+      },
+      "component":{
+        "type":"varchar",
+        "col":"component"
+      },
+      "rule":{
+        "type":"varchar",
+        "col":"rule"
+      },
+      "props":{
+        "type":"json",
+        "col":"props"
+      },
+      "params":{
+        "type":"varchar",
+        "col":"params"
+      },
+      "paramState":{
+        "type":"json",
+        "col":"paramState"
+      },
+      "employe":{
+        "type":"varchar",
+        "col":"employe"
+      },
+      "DH":{
+        "type":"datetime",
+        "col":"date_heure_creation"
+      },
+      "public":{
+        "type":"bool",
+        "col":"public"
+      }
+    },
+    "where":[[
+      {
+        "col":"public",
+        "operator":"=",
+        "value":1
+      }
+    ]],
+    "name":"Rapports enregistrés"    
+  },
+  "AesAdmin": {
+    "table": "v_stat_aes",
+    "auth": [],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id"
+      },
+      "idArticle":{
+        "type":"int(8)",
+        "col":"id_article",
+        "label":"Article"
+      },
+      "idMagasin": {
+        "type": "foreigns",
+        "col": "id_magasin",
+        "label": "Magasin",
+        "length": 2,
+        "foreign": {
+          "table": "magasin",
+          "primary": "id",
+          "label": "intitule"
+        }
+      },
+      "Famille":{
+        "type":"varchar(20)",
+        "col":"famille",
+        "icon":"category"
+      },
+      "Magasin": {
+        "type": "varchar(50)",
+        "col": "Magasin",
+        "label": "Magasin",
+        "icon": "store"
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "col": "Marque",
+        "label": "Marque",
+        "length": 2,
+        "icon": "pintereset"
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "col": "Modele",
+        "label": "Modéle",
+        "length": 2,
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(80)",
+        "col": "Couleur",
+        "label": "Couleur",
+        "length": 2,
+        "icon": "color"
+      },
+      "CB": {
+        "type": "varchar(40)",
+        "col": "CB",
+        "label": "Code-barre",
+        "length": 3,
+        "icon": "settings_ethernet",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":1310
+          }
+        ]]
+      },
+      "Rfid": {
+        "type": "varchar(20)",
+        "col": "Rfid",
+        "label": "RFID",
+        "length": 2,
+        "icon": "rss_feed",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":1310
+          }
+        ]]
+      },
+      "Carton": {
+        "type": "varchar(20)",
+        "col": "Carton",
+        "label": "Carton",
+        "icon": "box"
+      },
+      "Qte": {
+        "type": "int(10)",
+        "col": "Quantité",
+        "label": "Quantité",
+        "length": 1,
+        "icon": "format_list_numbered"
+      },
+      "Cout": {
+        "type": "decimal(10,2)",
+        "col": "Cout",
+        "label": "Cout",
+        "icon": "money_off",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":503
+          }
+        ]]
+      },
+      "puGros":{
+        "type":"decimal(8,2)",
+        "col":"pu_gros",
+        "label":"Prix gros",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":618
+          }
+        ]]
+      },
+      "puSGros":{
+        "type":"decimal(8,2)",
+        "col":"pu_semi_gros",
+        "label":"Prix semiGros",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":617
+          }
+        ]]
+      },
+      "puDetail":{
+        "type":"decimal(8,2)",
+        "col":"pu_detail",
+        "label":"Prix détail",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":616
+          }
+        ]]
+      },
+      "Entree": {
+        "type": "datetime",
+        "col": "Date_entrée",
+        "label": "Entrée le",
+        "length": 2,
+        "icon": "today"
+      },
+      "Etat": {
+        "type": "enum(Attente,Ok,Sortie)",
+        "col": "Etat",
+        "length": 1,
+        "icon": "dynamic_feed"
+      }
+    },
+    "name": "Article en stock"
+  },
+  "AesEmploye": {
+    "table": "v_stat_aes",
+    "auth": [],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id"
+      },
+      "idArticle":{
+        "type":"int(8)",
+        "col":"id_article",
+        "label":"Article"
+      },
+      "idMagasin": {
+        "type": "foreigns",
+        "col": "id_magasin",
+        "label": "Magasin",
+        "length": 2,
+        "foreign": {
+          "table": "magasin",
+          "primary": "id",
+          "label": "intitule"
+        }
+      },
+      "Famille":{
+        "type":"varchar(20)",
+        "col":"famille",
+        "icon":"category"
+      },
+      "Magasin": {
+        "type": "varchar(50)",
+        "col": "Magasin",
+        "label": "Magasin",
+        "icon": "store"
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "col": "Marque",
+        "label": "Marque",
+        "length": 2,
+        "icon": "pintereset"
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "col": "Modele",
+        "label": "Modéle",
+        "length": 2,
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(80)",
+        "col": "Couleur",
+        "label": "Couleur",
+        "length": 2,
+        "icon": "color"
+      },
+      "CB": {
+        "type": "varchar(40)",
+        "col": "CB",
+        "label": "Code-barre",
+        "length": 3,
+        "icon": "settings_ethernet",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":1310
+          }
+        ]]
+      },
+      "Rfid": {
+        "type": "varchar(20)",
+        "col": "Rfid",
+        "label": "RFID",
+        "length": 2,
+        "icon": "rss_feed",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":1310
+          }
+        ]]
+      },
+      "Carton": {
+        "type": "varchar(20)",
+        "col": "Carton",
+        "label": "Carton",
+        "icon": "box"
+      },
+      "Qte": {
+        "type": "int(10)",
+        "col": "Quantité",
+        "label": "Quantité",
+        "length": 1,
+        "icon": "format_list_numbered"
+      },
+      "Cout": {
+        "type": "decimal(10,2)",
+        "col": "Cout",
+        "label": "Cout",
+        "icon": "money_off",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":503
+          }
+        ]]
+      },
+      "puGros":{
+        "type":"decimal(8,2)",
+        "col":"pu_gros",
+        "label":"Prix gros",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":618
+          }
+        ]]
+      },
+      "puSGros":{
+        "type":"decimal(8,2)",
+        "col":"pu_semi_gros",
+        "label":"Prix semiGros",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":617
+          }
+        ]]
+      },
+      "puDetail":{
+        "type":"decimal(8,2)",
+        "col":"pu_detail",
+        "label":"Prix détail",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":616
+          }
+        ]]
+      },
+      "Entree": {
+        "type": "datetime",
+        "col": "Date_entrée",
+        "label": "Entrée le",
+        "length": 2,
+        "icon": "today"
+      },
+      "Etat": {
+        "type": "enum(Attente,Ok,Sortie)",
+        "col": "Etat",
+        "length": 1,
+        "icon": "dynamic_feed"
+      }
+    },
+    "where":[
+      [{
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }]
+    ],
+    "name": "Article en stock"
+  },  
+  "CommandesAdmin":{
+    "table":"v_stat_commande",
+    "auth": [],
+    "columns": {
+      "Date":{
+        "type":"date",
+        "col":"Date(date_heure)"
+      },
+      "Heure":{
+        "type":"time",
+        "col":"TIME(date_heure)"
+      },
+      "Type":{
+        "type":"varchar",
+        "col":"type"
+      },
+      "Nature":{
+        "type":"enum(Standard,PDV)",
+        "col":"nature"
+      },
+      "Etat":{
+        "type":"int(5)",
+        "col":"etat"
+      },
+      "Ref":{
+        "type":"varchar",
+        "col":"ref",
+        "label":"Référence"
+      },
+      "idMagasin":{
+        "type":"foreigns",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Magasin": {
+        "type": "varchar(30)",
+        "label": "Magasin",
+        "suffix": "",
+        "col": "magasin",
+        "icon": "store"
+      },
+      "Employe": {
+        "type": "varchar(101)",
+        "label": "Employé",
+        "suffix": "",
+        "col": "employe",
+        "icon": "account_box"
+      },
+      "Client":{
+        "type":"varchar",
+        "col":"client"
+      },
+      "CatClient":{
+        "type":"varchar",
+        "col":"clientCat",
+        "label":"Catégorie client",
+        "icon":"contacts"
+      },
+      "Commune":{
+        "type":"varchar",
+        "col":"commune"
+      },
+      "Wilaya":{
+        "type":"varchar",
+        "col":"wilaya"
+      },
+      "Pack":{
+        "type":"varchar",
+        "col":"pack"
+      },
+      "qtePack":{
+        "type":"int(10)",
+        "col":"qte_pack"
+      },
+      "modePaiement":{
+        "type":"enum(Comptant,A terme,Par chèque)",
+        "col":"mode_paiement"
+      },
+      "Total":{
+        "type":"decimal(10,2)",
+        "col":"total"
+      },
+      "Versement":{
+        "type":"decimal(10,2)",
+        "col":"versement"
+      },
+      "Benefice": {
+        "type": "decimal(10,2)",
+        "label": "Bénéfice",
+        "col": "benefice",
+        "icon": "euro",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":304
+          }
+        ]]
+      },
+      "dateCloture":{
+        "type":"date",
+        "col":"Date(dh_cloture)"
+      }
+    },
+    "where":[
+      [{
+        "col":"Etat",
+        "operator":">",
+        "value":"2"
+      },
+      {
+        "col":"Type",
+        "operator":"=",
+        "value":"Vente"
+      }]
+    ],
+    "name":"Commandes"
+  },
+  "CommandesEmploye":{
+    "table":"v_stat_commande",
+    "auth": [[]],
+    "columns": {
+      "Date":{
+        "type":"date",
+        "col":"Date(date_heure)"
+      },
+      "Heure":{
+        "type":"time",
+        "col":"TIME(date_heure)"
+      },
+      "Type":{
+        "type":"varchar",
+        "col":"type"
+      },
+      "Nature":{
+        "type":"enum(Standard,PDV)",
+        "col":"nature"
+      },
+      "Etat":{
+        "type":"int(5)",
+        "col":"etat"
+      },
+      "Ref":{
+        "type":"varchar",
+        "col":"ref",
+        "label":"Référence"
+      },
+      "idMagasin":{
+        "type":"foreigns",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Magasin": {
+        "type": "varchar(30)",
+        "label": "Magasin",
+        "suffix": "",
+        "col": "magasin",
+        "icon": "store"
+      },
+      "Employe": {
+        "type": "varchar(101)",
+        "label": "Employé",
+        "suffix": "",
+        "col": "employe",
+        "icon": "account_box"
+      },
+      "Client":{
+        "type":"varchar",
+        "col":"client"
+      },
+      "CatClient":{
+        "type":"varchar",
+        "col":"clientCat",
+        "label":"Catégorie client",
+        "icon":"contacts"
+      },
+      "Commune":{
+        "type":"varchar",
+        "col":"commune"
+      },
+      "Wilaya":{
+        "type":"varchar",
+        "col":"wilaya"
+      },
+      "Pack":{
+        "type":"varchar",
+        "col":"pack"
+      },
+      "qtePack":{
+        "type":"int(10)",
+        "col":"qte_pack"
+      },
+      "modePaiement":{
+        "type":"enum(Comptant,A terme,Par chèque)",
+        "col":"mode_paiement"
+      },
+      "Total":{
+        "type":"decimal(10,2)",
+        "col":"total"
+      },
+      "Versement":{
+        "type":"decimal(10,2)",
+        "col":"versement"
+      },
+      "Benefice": {
+        "type": "decimal(10,2)",
+        "label": "Bénéfice",
+        "col": "benefice",
+        "icon": "euro",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":304
+          }
+        ]]
+      },
+      "dateCloture":{
+        "type":"date",
+        "col":"Date(dh_cloture)"
+      }
+    },
+    "where":[
+      [{
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      },
+      {
+        "col":"Etat",
+        "operator":">",
+        "value":"2"
+      },
+      {
+        "col":"Type",
+        "operator":"=",
+        "value":"Vente"
+      }]
+    ],
+    "name":"Commandes"
+  },
+  "VisitesAdmin":{
+    "table":"v_stat_visite",
+    "auth": [],
+    "columns":{
+      "id":{
+        "type":"primary",
+        "col":"id"
+      },
+      "Contact":{
+        "type":"varchar",
+        "col":"contact",
+        "label":"Client",
+        "icon":"account_box"
+      },
+      "idContact":{
+        "type":"foreigns",
+        "col":"id_contact",
+        "label":"Client",
+        "foreign":{
+          "table":"contact",
+          "primary":"id",
+          "label":"nom",
+          "where":" where contact.id in (select distinct id_contact from tbl_visite)"
+        }
+      },
+      "Employe":{
+        "type":"varchar",
+        "col":"employe",
+        "label":"Employé",
+        "icon":"contact"
+      },
+      "idEmploye":{
+        "type":"foreigns",
+        "col":"id_employe",
+        "label":"Employé",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom",
+          "where":" where employe.id in (select distinct id_employe from tbl_visite)"
+        }
+      },
+      "clientPosition": {
+        "type": "geo",
+        "col": "concat('{\"lng\":',contact_longitude,',\"lat\":',contact_latitude,'}')",
+        "label": "Position client",
+        "icon": "location_on"
+      },
+      "employePosition": {
+        "type": "geo",
+        "col": "concat('{\"lng\":',longitude,',\"lat\":',latitude,'}')",
+        "label": "Position employé",
+        "icon": "location_on"
+      },
+      "dhDebut": {
+        "type": "datetime",
+        "col": "dh_debut",
+        "label": "Commencée le",
+        "icon": "today"
+      },
+      "dhFin": {
+        "type": "datetime",
+        "col": "dh_fin",
+        "label": "Finie le",
+        "icon": "event_available"
+      },
+      "Operation":{
+        "type":"varchar",
+        "col":"operations",
+        "label":"Opérations",
+        "length":3
+      },
+      "Etat":{
+        "type":"enum(En cours,Terminée)",
+        "col":"etat"
+      },
+      "totalVentes":{
+        "type":"decimal(10,2)",
+        "col":"total_ventes",
+        "label":"Total ventes"
+      }
+    },
+    "name":"Visites"
+  },
+  "VisitesEmploye":{
+    "table":"v_stat_visite",
+    "auth": [[]],
+    "columns":{
+      "id":{
+        "type":"primary",
+        "col":"id"
+      },
+      "idContact":{
+        "type":"foreigns",
+        "col":"id_contact",
+        "label":"idClient",
+        "foreign":{
+          "table":"contact",
+          "primary":"id",
+          "label":"nom",
+          "where":" where contact.id in (select distinct id_contact from tbl_visite)"
+        }
+      },
+      "idEmploye":{
+        "type":"foreigns",
+        "col":"id_employe",
+        "label":"idEmployé",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom",
+          "where":" where employe.id in (select distinct id_employe from tbl_visite)"
+        }
+      },
+      "clientPosition": {
+        "type": "geo",
+        "col": "concat('{\"lng\":',contact_longitude,',\"lat\":',contact_latitude,'}')",
+        "label": "Position client",
+        "icon": "location_on"
+      },
+      "employePosition": {
+        "type": "geo",
+        "col": "concat('{\"lng\":',longitude,',\"lat\":',latitude,'}')",
+        "label": "Position employé",
+        "icon": "location_on"
+      },
+      "dhDebut": {
+        "type": "datetime",
+        "col": "dh_debut",
+        "label": "Commencée le",
+        "icon": "today"
+      },
+      "dhFin": {
+        "type": "datetime",
+        "col": "dh_fin",
+        "label": "Finie le",
+        "icon": "event_available"
+      },
+      "Operation":{
+        "type":"varchar",
+        "col":"operations",
+        "label":"Opérations",
+        "length":3
+      },
+      "Etat":{
+        "type":"enum(En cours,Terminée)",
+        "col":"etat"
+      },
+      "totalVentes":{
+        "type":"decimal(10,2)",
+        "col":"total_ventes",
+        "label":"Total ventes"
+      }
+    },
+    "where":[[
+      {
+        "col":"idEmploye",
+        "operator":"in",
+        "value":"session(Users)"
+      }
+    ]],
+    "name":"Visites"
+  },
+  "LignesCommandeAdmin": {
+    "table": "v_stat_lignes_commande_gle",
+    "auth": [],
+    "columns": {
+      "Nature": {
+          "type": "enum(Standard,PDV)",
+          "label": "Nature",
+          "suffix": "",
+          "col": "nature",
+          "icon": ""
+      },
+      "idCommande": {
+          "type": "int(11)",
+          "label": "idCommande",
+          "suffix": "",
+          "col": "id_commande",
+          "icon": ""
+      },
+      "idMagasin":{
+        "type":"foreigns",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Magasin": {
+        "type": "varchar(30)",
+        "label": "Magasin",
+        "suffix": "",
+        "col": "magasin",
+        "icon": "store"
+      },
+      "Employe": {
+        "type": "varchar(101)",
+        "label": "Employé",
+        "suffix": "",
+        "col": "employe",
+        "icon": "account_box"
+      },
+      "Client": {
+          "type": "varchar(50)",
+          "label": "Client",
+          "suffix": "",
+          "col": "client",
+          "icon": "account_circle"
+        },
+        "CatClient":{
+          "type":"varchar",
+          "col":"clientCat",
+          "label":"Catégorie client",
+          "icon":"contacts"
+        },
+        "Marque": {
+          "type": "varchar(100)",
+          "label": "Marque",
+          "suffix": "",
+          "col": "marque",
+          "icon": "branding_watermark"
+        },
+        "Modele": {
+          "type": "varchar(255)",
+          "label": "Modéle",
+          "suffix": "",
+          "filterable": false,
+          "col": "modele",
+          "icon": ""
+        },
+        "Couleur": {
+          "type": "varchar(40)",
+          "label": "Couleur",
+          "suffix": "",
+          "filterable": false,
+          "col": "couleur",
+          "icon": ""
+        },
+        "Cout": {
+          "type": "decimal(12,2)",
+          "label": "Cout",
+          "suffix": "",
+          "col": "cout",
+          "icon": "",
+          "cond":[[
+            {
+              "variable":"autorisations",
+              "operator":"contains",
+              "value":503
+            }
+          ]]
+        },
+        "PU": {
+          "type": "decimal(12,2)",
+          "label": "Prix unitaire",
+          "suffix": "",
+          "col": "pu",
+          "icon": "attach_money"
+        },
+        "Reduction": {
+          "type": "decimal(12,2)",
+          "label": "Réduction",
+          "suffix": "",
+          "col": "reduction",
+          "icon": "money_off"
+        },
+        "Demandee": {
+          "type": "int",
+          "label": "Demandée",
+          "suffix": "",
+          "col": "qte",
+          "icon": ""
+        },
+        "Preparee": {
+          "type": "int",
+          "label": "Préparée",
+          "suffix": "",
+          "col": "qte_preparee",
+          "icon": ""
+        },
+        "Bonus": {
+          "type": "decimal(12,2)",
+          "label": "Bonus",
+          "suffix": "",
+          "col": "qte_bonus",
+          "icon": ""
+        },
+        "Montant": {
+          "type": "decimal(24,2)",
+          "label": "Montant",
+          "suffix": "",
+          "col": "montant",
+          "icon": ""
+        },
+        "Etat": {
+          "type": "varchar(11)",
+          "label": "Etat",
+          "suffix": "",
+          "col": "etat",
+          "icon": ""
+        },
+        "dhDemande": {
+          "type": "datetime",
+          "label": "Date Demande",
+          "suffix": "",
+          "col": "date_heure",
+          "icon": "today"
+        },
+        "dhCloture": {
+          "type": "datetime",
+          "label": "Date Cloture",
+          "suffix": "",
+          "col": "dh_cloture",
+          "icon": "event_available"
+        },
+        "Type": {
+          "type": "enum('Vente','Retour','Retour fournisseur')",
+          "label": "Type",
+          "suffix": "",
+          "col": "type",
+          "icon": ""
+        }
+    },
+    "where": [],
+    "limit": [],
+    "name": "AdminLignesCommande",
+    "cache_delay": "5000"
+  },
+  "LignesCommandeEmploye": {
+    "table": "v_stat_lignes_commande_gle",
+    "auth": [[]],
+    "columns": {
+      "Nature": {
+          "type": "enum(Standard,PDV)",
+          "label": "Nature",
+          "suffix": "",
+          "col": "nature",
+          "icon": ""
+      },
+      "idCommande": {
+          "type": "int(11)",
+          "label": "idCommande",
+          "suffix": "",
+          "col": "id_commande",
+          "icon": ""
+      },
+      "idMagasin":{
+        "type":"foreigns",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Magasin": {
+        "type": "varchar(30)",
+        "label": "Magasin",
+        "suffix": "",
+        "col": "magasin",
+        "icon": "store"
+      },
+      "idEmploye":{
+        "type":"foreigns",
+        "col":"id_employe",
+        "label":"Employé",
+        "icon": "account_box",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom"
+        }
+      },
+      "Employe": {
+        "type": "varchar(101)",
+        "label": "Employé",
+        "suffix": "",
+        "col": "employe",
+        "icon": "account_box"
+      },
+      "Client": {
+        "type": "varchar(50)",
+        "label": "Client",
+        "suffix": "",
+        "col": "client",
+        "icon": "account_circle"
+      },
+      "CatClient":{
+        "type":"varchar",
+        "col":"clientCat",
+        "label":"Catégorie client",
+        "icon":"contacts"
+      },
+      "Marque": {
+        "type": "varchar(100)",
+        "label": "Marque",
+        "suffix": "",
+        "col": "marque",
+        "icon": "branding_watermark"
+      },
+     "Modele": {
+      "type": "varchar(255)",
+      "label": "Modéle",
+      "suffix": "",
+      "filterable": false,
+     "col": "modele",
+      "icon": ""
+    },
+    "Couleur": {
+      "type": "varchar(40)",
+      "label": "Couleur",
+      "suffix": "",
+      "filterable": false,
+      "col": "couleur",
+      "icon": ""
+    },
+    "Cout": {
+      "type": "decimal(12,2)",
+      "label": "Cout",
+      "suffix": "",
+        "col": "cout",
+        "icon": "",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":503
+          }
+        ]]
+      },
+      "PU": {
+        "type": "decimal(12,2)",
+        "label": "Prix unitaire",
+        "suffix": "",
+        "col": "pu",
+        "icon": "attach_money"
+      },
+      "Reduction": {
+        "type": "decimal(12,2)",
+        "label": "Réduction",
+        "suffix": "",
+        "col": "reduction",
+        "icon": "money_off"
+      },
+      "Demandee": {
+        "type": "int",
+        "label": "Demandee",
+        "suffix": "",
+        "col": "qte",
+        "icon": ""
+      },
+      "Preparee": {
+        "type": "int",
+        "label": "Préparée",
+        "suffix": "",
+        "col": "qte_preparee",
+        "icon": ""
+      },
+      "Bonus": {
+        "type": "decimal(12,2)",
+        "label": "Bonus",
+        "suffix": "",
+        "col": "qte_bonus",
+        "icon": ""
+      },
+      "Montant": {
+        "type": "decimal(24,2)",
+        "label": "Montant",
+        "suffix": "",
+        "col": "montant",
+        "icon": ""
+      },
+      "Etat": {
+        "type": "varchar(11)",
+        "label": "Etat",
+        "suffix": "",
+        "col": "etat",
+        "icon": ""
+      },
+      "dhDemande": {
+        "type": "datetime",
+        "label": "Date Demande",
+        "suffix": "",
+        "col": "date_heure",
+        "icon": "today"
+      },
+      "dhCloture": {
+        "type": "datetime",
+        "label": "Date Cloture",
+        "suffix": "",
+        "col": "dh_cloture",
+        "icon": "event_available"
+      },
+      "Type": {
+        "type": "enum('Vente','Retour','Retour fournisseur')",
+        "label": "Type",
+        "suffix": "",
+        "col": "type",
+        "icon": ""
+      }
+    },
+    "where": [[
+      {
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }
+    ]],
+    "limit": [],
+    "name": "AdminLignesCommande",
+    "cache_delay": "5000"
+  },
+  "VentesAdmin": {
+    "table": "v_stat_ventes_benef",
+    "auth": [[]],
+    "columns": {
+      "Commande": {
+        "type": "int(11)",
+        "label": "Commande",
+        "suffix": "",
+        "filterable": false,
+        "col": "Commande",
+        "icon": "",
+        "length": 1
+      },
+      "DateCreation": {
+        "type": "date",
+        "label": "Date création",
+        "suffix": "",
+        "filterable": false,
+        "col": "DateCreation",
+        "icon": "date_range",
+        "length": 2
+      },
+      "HeureCreation": {
+        "type": "time",
+        "label": "Heure création",
+        "col": "HeureCreation",
+        "icon": "schedule",
+        "length": 1
+      },
+      "DateCloture": {
+        "type": "date",
+        "label": "Date cloture",
+        "suffix": "",
+        "filterable": false,
+        "col": "DateCloture",
+        "icon": "date_range",
+        "length": 2
+      },
+      "HeureCloture": {
+        "type": "time",
+        "label": "Heure cloture",
+        "col": "HeureCloture",
+        "icon": "schedule",
+        "length": 1
+      },
+      "Type":{
+        "type":"enum(Vente,Retour,Retour fournisseur)",
+        "col":"type",
+        "label":"Type de commande"
+      },
+      "Etat":{
+        "type":"enum(Préparée,Clôturée)",
+        "col":"Etat"
+      },
+      "Client": {
+        "type": "varchar(50)",
+        "label": "Client",
+        "suffix": "",
+        "filterable": false,
+        "col": "Client",
+        "icon": "account_box",
+        "length": 3
+      },
+      "CatClient":{
+        "type":"varchar",
+        "col":"categorie",
+        "label":"Catégorie client",
+        "icon":"contacts"
+      },
+      "Commune":{
+        "type":"varchar",
+        "col":"commune"
+      },
+      "Wilaya":{
+        "type":"varchar",
+        "col":"wilaya"
+      },
+      "idMagasin":{
+        "type":"foreigns",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Vendeur": {
+        "type": "varchar(101)",
+        "label": "Vendeur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Vendeur",
+        "icon": "directions_run",
+        "length": 2
+      },
+      "Famille": {
+        "type": "varchar(50)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "Famille",
+        "icon": "devices",
+        "length": 2
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "Marque",
+        "icon": "printerest",
+        "length": 2
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "label": "Modèle",
+        "suffix": "",
+        "filterable": false,
+        "col": "Article",
+        "icon": "category",
+        "length": 2
+      },
+      "Couleur": {
+        "type": "varchar(50)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Couleur",
+        "icon": "color",
+        "length": 1
+      },
+      "Cout": {
+        "type": "decimal(12,2)",
+        "label": "Cout",
+        "suffix": "",
+        "filterable": false,
+        "col": "Cout",
+        "icon": "money_off",
+        "length": 1,
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":503
+          }
+        ]]
+      },
+      "PU": {
+        "type": "decimal(10,2)",
+        "label": "Prix unitaire",
+        "suffix": "",
+        "filterable": false,
+        "col": "PU",
+        "icon": "attach_money",
+        "length": 1
+      },
+      "Reduction": {
+        "type": "decimal(12,2)",
+        "label": "Réduction",
+        "suffix": "",
+        "filterable": false,
+        "col": "Reduction",
+        "icon": "trending_down"
+      },
+      "Quantite": {
+        "type": "decimal(12,2)",
+        "label": "Quantité",
+        "suffix": "",
+        "filterable": false,
+        "col": "Quantite",
+        "icon": "grain",
+        "length": 1
+      },
+      "Gratuits": {
+        "type": "int(7)",
+        "label": "Gratuits",
+        "col": "qte_bonus",
+        "icon": "redeem"
+      },
+      "PT": {
+        "type": "decimal(10,2)",
+        "label": "Prix Total",
+        "col": "PT",
+        "icon": "money"
+      },
+      "Benefice": {
+        "type": "decimal(10,2)",
+        "label": "Bénéfice",
+        "col": "Benefice",
+        "icon": "euro",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":304
+          }
+        ]]
+      }
+    },
+    "where": [[{
+      "col":"Etat",
+      "operator":"<>",
+      "value":"Annulée"
+    },{
+      "col":"Type",
+      "operator":"<>",
+      "value":"Retour fournisseur"
+    }]],
+    "limit": [],
+    "name": "Ventes",
+    "cache_delay": "300"
+  },
+  "VentesEmploye": {
+    "table": "v_stat_ventes_benef",
+    "auth": [],
+    "columns": {
+      "Commande": {
+        "type": "int(11)",
+        "label": "Commande",
+        "suffix": "",
+        "filterable": false,
+        "col": "Commande",
+        "icon": "",
+        "length": 1
+      },
+      "DateCreation": {
+        "type": "date",
+        "label": "Date création",
+        "suffix": "",
+        "filterable": false,
+        "col": "DateCreation",
+        "icon": "date_range",
+        "length": 2
+      },
+      "HeureCreation": {
+        "type": "time",
+        "label": "Heure création",
+        "col": "HeureCreation",
+        "icon": "schedule",
+        "length": 1
+      },
+      "DateCloture": {
+        "type": "date",
+        "label": "Date cloture",
+        "suffix": "",
+        "filterable": false,
+        "col": "DateCloture",
+        "icon": "date_range",
+        "length": 2
+      },
+      "HeureCloture": {
+        "type": "time",
+        "label": "Heure cloture",
+        "col": "HeureCloture",
+        "icon": "schedule",
+        "length": 1
+      },
+      "Type":{
+        "type":"enum(Vente,Retour,Retour fournisseur)",
+        "col":"type",
+        "label":"Type de commande"
+      },
+      "Etat":{
+        "type":"enum(Préparée,Clôturée)",
+        "col":"Etat"
+      },
+      "Client": {
+        "type": "varchar(50)",
+        "label": "Client",
+        "suffix": "",
+        "filterable": false,
+        "col": "Client",
+        "icon": "account_box",
+        "length": 3
+      },
+      "CatClient":{
+        "type":"varchar",
+        "col":"categorie",
+        "label":"Catégorie client",
+        "icon":"contacts"
+      },
+      "Commune":{
+        "type":"varchar",
+        "col":"commune"
+      },
+      "Wilaya":{
+        "type":"varchar",
+        "col":"wilaya"
+      },
+      "idMagasin": {
+        "type": "foreigns",
+        "col": "id_magasin",
+        "label": "Magasin",
+        "length": 2,
+        "foreign": {
+          "table": "magasin",
+          "primary": "id",
+          "label": "intitule"
+        }
+      },
+      "idVendeur": {
+        "type": "foreigns",
+        "col":"idVendeur",
+        "label":"Vendeur",
+        "icon":"directions_run",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom"
+        }
+      },
+      "Vendeur": {
+        "type": "varchar(101)",
+        "label": "Vendeur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Vendeur",
+        "icon": "directions_run",
+        "length": 2
+      },
+      "Famille": {
+        "type": "varchar(50)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "Famille",
+        "icon": "devices",
+        "length": 2
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "Marque",
+        "icon": "printerest",
+        "length": 2
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "label": "Modéle",
+        "suffix": "",
+        "filterable": false,
+        "col": "Article",
+        "icon": "category",
+        "length": 2
+      },
+      "Couleur": {
+        "type": "varchar(50)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Couleur",
+        "icon": "color",
+        "length": 1
+      },
+      "Cout": {
+        "type": "decimal(12,2)",
+        "label": "Cout",
+        "suffix": "",
+        "filterable": false,
+        "col": "Cout",
+        "icon": "money_off",
+        "length": 1,
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":503
+          }
+        ]]
+      },
+      "PU": {
+        "type": "decimal(10,2)",
+        "label": "Prix unitaire",
+        "suffix": "",
+        "filterable": false,
+        "col": "PU",
+        "icon": "attach_money",
+        "length": 1
+      },
+      "Reduction": {
+        "type": "decimal(12,2)",
+        "label": "Réduction",
+        "suffix": "",
+        "filterable": false,
+        "col": "Reduction",
+        "icon": "trending_down"
+      },
+      "Quantite": {
+        "type": "decimal(12,2)",
+        "label": "Quantité",
+        "suffix": "",
+        "filterable": false,
+        "col": "Quantite",
+        "icon": "grain",
+        "length": 1
+      },
+      "Gratuits": {
+        "type": "int(7)",
+        "label": "Gratuits",
+        "col": "qte_bonus",
+        "icon": "redeem"
+      },
+      "PT": {
+        "type": "decimal(10,2)",
+        "label": "Prix Total",
+        "col": "PT",
+        "icon": "money"
+      },
+      "Benefice": {
+        "type": "decimal(10,2)",
+        "label": "Bénéfice",
+        "col": "Benefice",
+        "icon": "euro",
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":304
+          }
+        ]]
+      }
+    },
+    "where": [
+      [
+        {
+          "col":"Etat",
+          "operator":"<>",
+          "value":"Annulée"
+        },
+        {
+          "col":"idMagasin",
+          "operator":"in",
+          "value":"session(Mags)"
+        }
+      ],
+      [
+        {
+          "col":"Etat",
+          "operator":"<>",
+          "value":"Annulée"
+        },
+        {
+          "col":"idVendeur",
+          "operator":"in",
+          "value":"session(Users)"
+        }
+      ]
+    ],
+    "limit": [],
+    "name": "Ventes",
+    "cache_delay": "300"
+  },
+  "ArriveeAdmin": {
+    "table": "v_stat_arrivee_articles",
+    "auth":[],
+    "columns": {
+      "id": {
+        "type": "primary(8)",
+        "col": "id",
+        "label": "id"
+      },
+      "idArrivee": {
+        "col": "id_arrivee",
+        "type": "int(10)",
+        "label": "idArrivee",
+        "icon": "input"
+      },
+      "Arrivee": {
+        "type": "varchar(10)",
+        "col": "Arrivee",
+        "label": "Arrivée",
+        "icon": "input"
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Heure",
+        "icon": "schedule",
+        "length": 1
+      },
+      "Fournisseur": {
+        "type": "varchar(30)",
+        "col": "Fournisseur",
+        "label": "Fournisseur",
+        "icon": "input"
+      },
+      "Famille": {
+        "type": "varchar(20)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "Famille",
+        "icon": "devices"
+      },
+      "idArticle": {
+        "col": "id_article",
+        "type": "int(10)",
+        "label": "idArticle",
+        "icon": "device"
+      },
+      "Marque": {
+        "type": "varchar(20)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "Marque",
+        "icon": "printerest"
+      },
+      "Modele": {
+        "type": "varchar(40)",
+        "label": "Modéle",
+        "length": 3,
+        "suffix": "",
+        "filterable": false,
+        "col": "Article",
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(20)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Couleur",
+        "icon": "color"
+      },
+      "Prevue": {
+        "type": "int(7)",
+        "label": "Prévue",
+        "col": "Prevue",
+        "icon": "alarm",
+        "length": 1
+      },
+      "Reele": {
+        "type": "int(7)",
+        "label": "Réelle",
+        "col": "Reele",
+        "length": 1
+      },
+      "Gratuits": {
+        "type": "int(7)",
+        "label": "Gratuits",
+        "col": "Gratuits",
+        "length": 1
+      },
+      "Cout": {
+        "type": "int(7)",
+        "label": "Cout",
+        "col": "Cout"
+      }
+    },
+    "name": "Arrivées"
+  },
+  "ArriveeEmploye": {
+    "table": "v_stat_arrivee_articles",
+    "auth": [[]],
+    "columns": {
+      "id": {
+        "type": "primary(8)",
+        "col": "id",
+        "label": "id"
+      },
+      "idArrivee": {
+        "col": "id_arrivee",
+        "type": "int(10)",
+        "label": "idArrivee",
+        "icon": "input"
+      },
+      "Arrivee": {
+        "type": "varchar(10)",
+        "col": "Arrivee",
+        "label": "Arrivée",
+        "icon": "input"
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Heure",
+        "icon": "schedule",
+        "length": 1
+      },
+      "Fournisseur": {
+        "type": "varchar(30)",
+        "col": "Fournisseur",
+        "label": "Fournisseur",
+        "icon": "input"
+      },
+      "Famille": {
+        "type": "varchar(20)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "Famille",
+        "icon": "devices"
+      },
+      "idArticle": {
+        "col": "id_article",
+        "type": "int(10)",
+        "label": "idArticle",
+        "icon": "device"
+      },
+      "Marque": {
+        "type": "varchar(20)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "Marque",
+        "icon": "printerest"
+      },
+      "Modele": {
+        "type": "varchar(40)",
+        "label": "Modéle",
+        "length": 3,
+        "suffix": "",
+        "filterable": false,
+        "col": "Article",
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(20)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "Couleur",
+        "icon": "color"
+      },
+      "Prevue": {
+        "type": "int(7)",
+        "label": "Prévue",
+        "col": "Prevue",
+        "icon": "alarm",
+        "length": 1
+      },
+      "Reele": {
+        "type": "int(7)",
+        "label": "Réelle",
+        "col": "Reele",
+        "length": 1
+      },
+      "Gratuits": {
+        "type": "int(7)",
+        "label": "Gratuits",
+        "col": "Gratuits",
+        "length": 1
+      },
+      "Cout": {
+        "type": "int(7)",
+        "label": "Cout",
+        "col": "Cout"
+      }
+    },
+    "where":[[
+      {
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }
+    ]],
+    "name": "Arrivées"
+  },
+  "RetourClientAdmin": {
+    "table": "v_stat_retour_client_article",
+    "auth":[],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id_arrivee",
+        "label": "idRetour",
+        "length": 1
+      },
+      "idClient": {
+        "type": "foreign",
+        "col": "id_client",
+        "label": "idClient",
+        "length": 4,
+        "icon": "contacts",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where": " where id in(select distinct id_client from v_stat_retour_client_article)"
+        }
+      },
+      "Client": {
+        "type": "varchar(70)",
+        "col": "client",
+        "label": "Clients",
+        "icon": "contact"
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Famille": {
+        "type": "varchar(50)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "famille",
+        "icon": "devices"
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "marque",
+        "icon": "printerest"
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "label": "Modéle",
+        "suffix": "",
+        "filterable": false,
+        "col": "modele",
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(50)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "couleur",
+        "icon": "color"
+      },
+      "Qte":{
+        "type":"int(5)",
+        "col":"qte_reel",
+        "label":"Quantité",
+        "icon": "format_list_numbered",
+        "length": 1
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Heure",
+        "icon": "schedule",
+        "length": 1
+      }
+    },
+    "name": "Retour client"
+  },
+  "RetourClientEmploye": {
+    "table": "v_stat_retour_client_article",
+    "auth":[[]],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id_arrivee",
+        "label": "idRetour",
+        "length": 1
+      },
+      "idClient": {
+        "type": "foreign",
+        "col": "id_client",
+        "label": "idClient",
+        "length": 4,
+        "icon": "contacts",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where": " where id in(select distinct id_client from v_stat_retour_client_article)"
+        }
+      },
+      "Client": {
+        "type": "varchar(70)",
+        "col": "client",
+        "label": "Clients",
+        "icon": "contact"
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Famille": {
+        "type": "varchar(50)",
+        "label": "Famille",
+        "suffix": "",
+        "filterable": false,
+        "col": "famille",
+        "icon": "devices"
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "label": "Marque",
+        "suffix": "",
+        "filterable": false,
+        "col": "marque",
+        "icon": "printerest"
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "label": "Modéle",
+        "suffix": "",
+        "filterable": false,
+        "col": "modele",
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(50)",
+        "label": "Couleur",
+        "suffix": "",
+        "filterable": false,
+        "col": "couleur",
+        "icon": "color"
+      },
+      "Qte":{
+        "type":"int(5)",
+        "col":"qte_reel",
+        "label":"Quantité",
+        "icon": "format_list_numbered",
+        "length": 1
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Heure",
+        "icon": "schedule",
+        "length": 1
+      }
+    },
+    "where":[[
+      {
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }
+    ]],
+    "name": "Retour client"
+  },
+  "RetourFournAdmin": {
+    "table": "v_stat_retour_fourn_article",
+    "auth":[],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id",
+        "label": "idRetour",
+        "length": 1
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date(date_heure)",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Time(date_heure)",
+        "icon": "schedule",
+        "length": 1
+      },
+      "idFournisseur": {
+        "type": "foreign",
+        "col": "id_fournisseur",
+        "label": "idFournisseur",
+        "length": 3,
+        "icon": "contacts",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where": " where contact.id in(select distinct id_fournisseur from v_stat_retour_fourn_article)"
+        }
+      },
+      "idEmploye": {
+        "type": "foreigns",
+        "col":"id_employe",
+        "label":"Employé",
+        "icon":"directions_run",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom"
+        }
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Article":{
+        "type":"varchar",
+        "col":"designation",
+        "label":"Article",
+        "length":4
+      },
+      "Qte":{
+        "type":"int(5)",
+        "col":"qte",
+        "label":"Quantité",
+        "icon": "format_list_numbered",
+        "length": 1
+      },
+      "PU":{
+        "type":"decimal(10,2)",
+        "col":"pu",
+        "label":"Prix",
+        "icon":"attach_money"
+      }
+    },
+    "where":[[
+      {
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }],
+      [
+        {
+          "col":"idEmploye",
+          "operator":"in",
+          "value":"session(Users)"
+        }
+      ] 
+    ],
+    "name": "Retour fournisseur"
+  },
+  "RetourFournEmploye": {
+    "table": "v_stat_retour_fourn_article",
+    "auth": [[]],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id",
+        "label": "idRetour",
+        "length": 1
+      },
+      "Date": {
+        "type": "date",
+        "label": "Date",
+        "suffix": "",
+        "filterable": false,
+        "col": "Date(date_heure)",
+        "icon": "date_range"
+      },
+      "Heure": {
+        "type": "time",
+        "label": "Heure",
+        "col": "Time(date_heure)",
+        "icon": "schedule",
+        "length": 1
+      },
+      "idFournisseur": {
+        "type": "foreign",
+        "col": "id_fournisseur",
+        "label": "idFournisseur",
+        "length": 3,
+        "icon": "contacts",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where": " where contact.id in(select distinct id_fournisseur from v_stat_retour_fourn_article)"
+        }
+      },
+      "idEmploye": {
+        "type": "foreigns",
+        "col":"id_employe",
+        "label":"Employé",
+        "icon":"directions_run",
+        "foreign":{
+          "table":"employe",
+          "primary":"id",
+          "label":"nom"
+        }
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Article":{
+        "type":"varchar",
+        "col":"designation",
+        "label":"Article",
+        "length":4
+      },
+      "Qte":{
+        "type":"int(5)",
+        "col":"qte",
+        "label":"Quantité",
+        "icon": "format_list_numbered",
+        "length": 1
+      },
+      "PU":{
+        "type":"decimal(10,2)",
+        "col":"pu",
+        "label":"Prix",
+        "icon":"attach_money"
+      }
+    },
+    "where":[[
+      {
+        "col":"idMagasin",
+        "operator":"in",
+        "value":"session(Mags)"
+      }],
+      [
+        {
+          "col":"idEmploye",
+          "operator":"in",
+          "value":"session(Users)"
+        }
+      ] 
+    ],
+    "name": "Retour fournisseur"
+  },
+  "histoAes": {
+    "table": "v_stat_arrivee_haes",
+    "auth": [],
+    "columns": {
+      "idAes": {
+        "col": "id_aes",
+        "type": "int(12)",
+        "label": "idAes"
+      },
+      "idArrivee": {
+        "col": "id_arrivee",
+        "type": "int(10)",
+        "label": "idArrivee",
+        "icon": "input"
+      },
+      "idArticle": {
+        "col": "id_article",
+        "type": "int(10)",
+        "label": "idArticle",
+        "icon": "device"
+      },
+      "Article": {
+        "col": "Article",
+        "type": "varchar(100)",
+        "icon": "category",
+        "length": 4
+      },
+      "CB": {
+        "col": "code_bar",
+        "type": "varchar(20)",
+        "label": "Code-barre",
+        "icon": "code",
+        "length": 3,
+        "cond":[[
+          {
+            "variable":"autorisations",
+            "operator":"contains",
+            "value":1310
+          }
+        ]]
+      },
+      "RFID": {
+        "col": "rfid",
+        "type": "varchar(20)",
+        "label": "RFID",
+        "icon": "wifi"
+      },
+      "Qte": {
+        "col": "qte",
+        "type": "int(5)",
+        "label": "Quantité",
+        "icon": "format_list_numbered",
+        "length": 1
+      }
+    },
+    "name": "Historique des articles en stock"
+  },
+  "AdminArticles": {
+    "table": "v_stat_article_par_magasin",
+    "auth": [],
+    "columns":{
+      "Categorie":{
+        "type": "varchar(10)",
+        "col": "categorie",
+        "icon": "category"
+      },
+      "Famille":{
+        "type":"varchar(20)",
+        "col":"famille",
+        "icon":"devices",
+        "label": "Famille"
+      },
+      "idArticle":{
+        "type": "int(10)",
+        "col": "id_art"
+      },
+      "Article":{
+        "type":"varchar(100)",
+        "col":"designation",
+        "label":"Article",
+        "icon": "devices",
+        "length":3
+      },
+      "idMagasin":{
+        "type":"foreign",
+        "col":"id_magasin",
+        "label":"Magasin",
+        "icon":"business",
+        "foreign":{
+          "table":"magasin",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "Qte":{
+        "type":"int(5)",
+        "col":"qte",
+        "label":"Quantité",
+        "icon":"grain",
+        "length":1
+      },
+      "PU":{
+        "type":"decimal(8,2)",
+        "col":"pu_detail",
+        "label":"Prix unitaire",
+        "icon":"money"
+      }
+    },
+    "where":[[
+      {
+        "col":"Qte",
+        "operator":">",
+        "value": 0
+      }
+    ]],
+    "name":"Articlespar magasin"
+  },
+  "VMMouvementsClotures": {
+    "table": "v_stat_dm_cloture",
+    "auth": [[]],
+    "columns": {
+      "id": {
+        "type": "primary",
+        "col": "id"
+      },
+      "idMagasinDemandeur": {
+        "type": "int(5)",
+        "col": "id_magasin_demandeur"
+      },
+      "MagasinAppro": {
+        "type": "varchar(40)",
+        "col": "Magasin_appro",
+        "label": "Approvisionneur",
+        "icon": "business"
+      },
+      "Marque": {
+        "type": "varchar(50)",
+        "col": "Marque",
+        "label": "Marque",
+        "length": 2,
+        "icon": "pintereset"
+      },
+      "Modele": {
+        "type": "varchar(50)",
+        "col": "Modele",
+        "label": "Modéle",
+        "length": 2,
+        "icon": "category"
+      },
+      "Couleur": {
+        "type": "varchar(80)",
+        "col": "Couleur",
+        "label": "Couleur",
+        "length": 2,
+        "icon": "color"
+      },
+      "qteDemandee": {
+        "type": "int",
+        "col": "Demandee",
+        "label": "Demandée",
+        "length": 1,
+        "icon": "format_list_numbered"
+      },
+      "qtePreparee": {
+        "type": "int",
+        "col": "Preparee",
+        "label": "Préparée",
+        "length": 1,
+        "icon": "format_list_numbered"
+      },
+      "dhDemande": {
+        "type": "datetime",
+        "col": "dh_demande",
+        "label": "Demandée le",
+        "icon": "alarm"
+      },
+      "dhValidation": {
+        "type": "datetime",
+        "col": "dh_fin",
+        "label": "Reéu le",
+        "icon": "alarm_on"
+      },
+      "Commentaire": {
+        "type": "text",
+        "col": "Commentaire",
+        "label": "Commentaire",
+        "icon": "comment",
+        "length": 4
+      }
+    },
+    "where": [[
+      {
+        "col": "idMagasinDemandeur",
+        "operator": "=",
+        "value": "session(idMagasin)"
+      }
+    ]],
+    "name": "Approvisionnement"
+  }
+}

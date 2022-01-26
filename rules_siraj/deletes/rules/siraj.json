@@ -1,0 +1,115 @@
+{
+  "Report":{
+    "table":"reports",
+    "auth": [[
+      {
+        "variable":"autorisations",
+        "operator":"contains",
+        "value":307
+      }
+    ]],
+    "cond": {
+      "id": {
+        "type": "int(11)",
+        "label": "id",
+        "col": "id",
+        "operator": "in",
+        "required": true
+      }
+    },
+    "columns":[],
+    "name": "Annuler une sortie"
+  },
+  "Sorties": {
+    "table": "sortie",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+          }
+        ]
+      ],
+    "cond": {
+      "id": {
+        "type": "int(11)",
+        "label": "id",
+        "col": "id",
+        "operator": "in",
+        "required": true
+      }
+    },
+    "name": "Annuler une sortie",
+    "where": "etat < 1"
+  },
+  "LigneCommande": {
+    "table": "ligne_commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "cond": {
+      "id": {
+        "type": "int(11)",
+        "label": "id",
+        "col": "id",
+        "operator": "in",
+        "required": true
+      }
+    },
+    "name": "Supprimer ligne de commande",
+    "where": "etat < 3"
+  },
+  "VMCommande": {
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "cond":{
+      "id": {
+        "type": "int(11)",
+        "label": "id",
+        "col": "id",
+        "operator": "=",
+        "required": true
+      }
+    },
+    "name":"Supprimer une commande et tous ses articles",
+    "where":"etat < 4 AND id_magasin = session(idMagasin)" 
+  },
+  "ArticleEnStock": {
+    "table": "article_en_stock",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "cond":{
+      "id": {
+        "type": "int(11)",
+        "label": "id",
+        "col": "id",
+        "operator": "in",
+        "required": true
+      }
+    },
+    "name":"Supprimer un article en stock en cours d'entrée",
+    "where":"etat = 'Attente' AND id_magasin = session(idMagasin)" 
+  }
+}

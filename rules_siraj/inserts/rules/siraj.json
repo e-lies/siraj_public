@@ -1,0 +1,500 @@
+{
+  "Reports": {
+    "table": "reports",
+    "auth": [],
+    "columns":{
+      "idCategory":{
+        "type":"foreign",
+        "col":"id_report_categorie",
+        "label":"Catégorie",
+        "foreign":{
+          "table":"report_categorie",
+          "primary":"id",
+          "label":"intitule"
+        }
+      },
+      "component":{
+        "type":"varchar",
+        "col":"component"
+      },
+      "rule":{
+        "type":"varchar",
+        "col":"rule"
+      },
+      "params":{
+        "type":"json",
+        "col":"params"
+      },
+      "name":{
+        "type":"varchar",
+        "col":"name",
+        "label":"Intitulé",
+        "length":3
+      },
+      "props":{
+        "type":"json",
+        "col":"componentProps",
+        "label":"Paramètres"
+      },
+      "paramState":{
+        "type":"json",
+        "col":"paramState",
+        "label":"Filtres"
+      }
+    },
+    "constants":[{
+      "col":"id_employe",
+      "value":"session(idProfile)"
+    }],
+    "name":"Ajouter un rapport"    
+  },
+  "aes": {
+    "table": "article_en_stock",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "Superviseur"
+        }
+      ]
+    ],
+    "columns": {
+      "Article": {
+        "type": "foreign",
+        "label": "Article",
+        "suffix": "",
+        "col": "id_article",
+        "required": false,
+        "unique": false,
+        "icon": "today",
+        "foreign": {
+          "table": "article",
+          "primary": "id",
+          "label": "designation",
+          "where": "where id_famille = 2"
+        }
+      },
+      "Magasin": {
+        "type": "foreign",
+        "label": "Magasin",
+        "suffix": "",
+        "col": "id_magasin",
+        "required": false,
+        "unique": false,
+        "icon": "store",
+        "foreign": {
+          "table": "magasin",
+          "primary": "id",
+          "label": "intitutle"
+        }
+      },
+      "Quantite": {
+        "type": "int(6)",
+        "label": "Quantité",
+        "suffix": "",
+        "col": "qte",
+        "required": false,
+        "unique": false,
+        "icon": "list",
+        "populate": false
+      }
+    },
+    "name": "aes",
+    "constants": [],
+    "ignore": true
+  },
+  "VMDemandeMouvement": {
+    "table": "demande_mouvement",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idArticle": {
+        "type":"foreign",
+        "col": "id_article",
+        "label": "Article",
+        "icon": "category",
+        "required": "true",
+        "foreign": {
+          "table": "article",
+          "primary": "id",
+          "label": "article.designation",
+          "image": "article.image",
+          "where": "where actif = 'Activé'"
+        }
+      },
+      "Qte": {
+        "type": "int(6)",
+        "col": "qte",
+        "label": "Quantité",
+        "icon": "list",
+        "required": "true"
+      }
+    },
+    "name": "Demande d'approvisionnement",
+    "constants": [
+      {
+        "col": "id_magasin_demandeur",
+        "value": "session(idMagasin)"
+      },
+      {
+        "col": "id_employe",
+        "value": "session(idUser)"
+      }
+    ],
+    "ignore": true
+  },
+  "LigneMouvement": {
+    "table": "commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idDemandeMouvement":{
+
+      },
+      "idAes":{
+
+      }
+    },
+    "name": "Envoyer un article",
+    "constants": [{
+      "col":"id_preparateur",
+      "value":"session(idUser)"
+    }]
+  },
+  "VMCommande": {
+    "table": "commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idClient": {
+        "type": "foreign",
+        "col": "id_client",
+        "label": "Client",
+        "icon": "person",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where":" where type_contact < 2"
+        },
+        "required": true,
+        "length": 4
+      },
+      "modePaiement": {
+        "type": "enum(Comptant,A terme,Par chèque)",
+        "col": "mode_paiement",
+        "label": "Mode Paiement",
+        "icon": "payment",
+        "required": false
+      },
+      "Versement":{
+        "type":"decimal(10,2)",
+        "col":"versement",
+        "icon":"exit_to_app",
+        "suffixe":" da"
+      },
+      "Signature":{
+        "type":"signature",
+        "col":"signature",
+        "label": "Signature client",
+        "icon":"create"
+      }     
+    },
+    "name": "Créer une commande",
+    "constants": [
+      {
+        "col": "id_magasin",
+        "value": "session(idMagasin)"
+      },
+      {
+        "col": "id_employe",
+        "value": "session(idUser)"
+      }
+    ]
+  },
+  "LigneCommande": {
+    "table": "ligne_commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idCommande": {
+        "type": "foreign",
+        "col": "id_commande",
+        "label": "Commande",
+        "foreign":{
+          "table":"commande",
+          "primary":"id",
+          "label":"id",
+          "where":" where commande.id_magasin=session(idMagasin) AND commande.etat < 4"
+        }
+      },
+      "idArticle": {
+        "type":"foreign(6)",
+        "col": "id_article",
+        "label": "Article",
+        "icon": "category",
+        "required": true,
+        "foreign": {
+          "table": "article",
+          "primary": "id",
+          "label": "concat(article.designation,' (',article.code_bar,')')",
+          "image": "article.image",
+          "where": "where article.id in (select distinct id_article from article_en_stock where id_magasin=session(idMagasin) AND etat='Ok') AND article.id_categorie=(select id from categorie where intitule='Vrac')"
+        }
+      },
+      "Qte": {
+        "type": "int(6)",
+        "col": "qte",
+        "label": "Quantité",
+        "icon": "list",
+        "required": true
+      },
+      "PU": {
+        "type": "decimal(8,2)",
+        "col": "pu",
+        "label": "Prix unitaire",
+        "icon": "money",
+        "required": true
+      },
+      "Reduction": {
+        "type": "decimal(8,2)",
+        "col": "reduction",
+        "label": "Réduction",
+        "icon": "money_off"
+      }
+    },
+    "name": "Lignes de commande",
+    "constants": [
+      {
+        "col": "id_employe",
+        "value": "session(idUser)"
+      }
+    ]
+  },
+  "Sortie": {
+    "table": "sortie",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idLigneCommande": {
+        "type": "foreign",
+        "col": "id_ligne_commande",
+        "label": "Commande",
+        "foreign":{
+          "table":"ligne_commande",
+          "primary":"id",
+          "label":" ligne_commande.designation",
+          "where":" where ligne_commande.id_commande in (select id from commande where id_magasin=session(idMagasin) AND etat < 4"
+        }
+      },
+      "idAes": {
+        "type":"int(12)",
+        "col": "id_article_en_stock",
+        "label": "Article en stock",
+        "icon": "phone",
+        "required": true
+      }
+    },
+    "name": "Lignes de commande",
+    "constants": [
+      {
+        "col": "id_preparateur",
+        "value": "session(idUser)"
+      }
+    ]
+  },
+  "Cheque":{
+    "table":"cheque",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idClient": {
+        "type": "foreign",
+        "col": "id_client",
+        "label": "Client",
+        "icon": "person",
+        "foreign": {
+          "table": "contact",
+          "primary": "id",
+          "label": "nom",
+          "where":" where type_contact < 2"
+        },
+        "required": true,
+        "length": 2
+      }
+    }
+  },
+  "VMBalance": {
+    "table": "balance",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "idContact": {
+        "type": "foreign",
+        "col": "id_contact",
+        "label": "Client",
+        "icon": "account_box",
+        "length": 3,
+        "foreign": {
+          "table": "contact",
+          "primary":"id",
+          "label":"contact.nom"
+        },
+        "required": true
+      },
+      "Raison": {
+        "type":"enum(Versement,Remboursement,Rectification,Bonus)",
+        "col": "raison",
+        "label": "Opération",
+        "icon": "help",
+        "length": 1,
+        "required": true
+      },
+      "Entree": {
+        "type": "decimal(10,2)",
+        "col": "entree",
+        "label": "Entrée",
+        "icon":"attach_money",
+        "length": 1
+      },
+      "Sortie": {
+        "type": "decimal(10,2)",
+        "col": "sortie",
+        "label": "Sortie",
+        "icon":"money_off",
+        "length": 1
+      },      
+      "Commentaire": {
+        "type": "text(255,3)",
+        "col": "Commentaire",
+        "label": "Commentaire",
+        "icon": "comment",
+        "length": 4
+      }
+    },
+    "constants":[{
+      "col": "id_receveur",
+      "value": "session(idUser)"
+    }],
+    "name": "Encaissement/Versement"
+  },
+  "Client":{
+    "table": "balance",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "Categorie":{
+        "type":"enum(Détail,Gros)",
+        "col":"categorie",
+        "label":"Catégorie"
+      },
+      "Nom":{
+        "type":"varchar",
+        "col":"nom",
+        "label":"Nom complet",
+        "length":3
+      },
+      "Adresse":{
+        "type":"address",
+        "col":"adresse",
+        "icon":"place",
+        "length":3
+      },
+      "Mail":{
+        "type":"email",
+        "col":"email",
+        "label":"e-mail",
+        "length":2
+      },
+      "Telephone":{
+        "type":"tel",
+        "col":"tel",
+        "label":"Téléphone",
+        "length":2
+      },
+      "numeroFiscal":{
+        "type":"int",
+        "col":"n_m_fiscal",
+        "label":"N° fiscal",
+        "length":2
+      },
+      "Solde":{
+        "type":"decimal(10,2)",
+        "col":"solde"
+      },
+      "maxCredit":{
+        "type":"decimal(10,2)",
+        "col":"max_credit",
+        "label":"Crédit maximum",
+        "length":2
+      },
+      "Photo":{
+        "type":"image",
+        "col":"photo",
+        "length":2
+      }
+    },
+    "constants":[{
+      "col": "type_contact",
+      "value": 1
+    }],
+    "name": "Nouveau client"
+  }
+}

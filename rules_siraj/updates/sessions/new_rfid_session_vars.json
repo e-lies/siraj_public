@@ -1,0 +1,39 @@
+{
+  "vars": {
+    "role": {
+      "type": "enum",
+      "values": [
+        "Administrateur",
+        "Superviseur",
+        "Gestionnaire",
+        "Comptable",
+        "Vendeur",
+        "Preparateur"
+      ]
+    },
+    "idProfile": {
+      "type": "int"
+    },
+    "idMagasin": {
+      "type": "int"
+    },
+    "userName": {
+      "type": "varchar"
+    },
+    "mail":{
+      "type":"varchar"
+    },
+    "phone":{
+      "type":"varchar"
+    },
+    "idEquipe":{
+      "type":"int"
+    },
+    "nomEquipe":{
+      "type":"varchar"
+    },
+    "dhConnexion":{
+      "type":"datetime"
+    }
+  }
+}

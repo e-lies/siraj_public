@@ -1,0 +1,407 @@
+{
+  "ClotureMouvement": {
+    "table": "demande_mouvement",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "name": "ClotureMouvement",
+    "columns": {},
+    "cond": {
+      "id": {
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "where": " id_magasin_demandeur = session(idMagasin)",
+    "constants": [
+      {
+        "col": "etat",
+        "value": "Cloture"
+      }
+    ],
+    "ignore": false
+  },
+  "ConflitMouvement": {
+    "table": "demande_mouvement",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "Commentaire": {
+        "type": "text(255,3)",
+        "col": "commentaire",
+        "label": "Commentaire",
+        "icon": "comment",
+        "unique": false,
+        "populate": false
+      }
+    },
+    "name": "Conflit sur mouvement",
+    "cond": {
+      "id": {
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "where": " id_magasin_demandeur = session(idMagasin)",
+    "constants": [
+      {
+        "col": "etat",
+        "value": "Conflit"
+      }
+    ],
+    "ignore": true
+  },
+  "VMMouvement": {
+    "table":"demande_mouvement",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "qteDemandee": {
+        "type": "int(7)",
+        "col": "qte",
+        "label": "Quantité demandée",
+        "icon": "dynamic_feed"
+      },
+      "Commentaire": {
+        "type": "text(255,3)",
+        "col": "commentaire",
+        "label": "Commentaire",
+        "icon": "comment",
+        "unique": false,
+        "populate": false
+      }
+    },
+    "name": "Modifier le mouvement",
+    "cond": {
+      "id": {
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "where": "id_magasin_demandeur = session(idMagasin)",
+    "ignore": false
+  },
+  "AnnulationMouvement": {
+    "table":"demande_mouvement",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {},
+    "name": "Annuler mouvement",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "in"
+      }
+    },
+    "constants": [{
+      "col": "etat",
+      "value": "Annule"
+    }],
+    "where":" id_magasin_demandeur = session(idMagasin)",
+    "ignore": true
+  },
+  "VMClient":{
+    "table":"contact",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur",
+          "populate":true
+        }
+      ]
+    ],
+    "columns":{
+      "Adresse":{
+        "type":"address",
+        "col":"adresse",
+        "icon":"home",
+        "length":3,
+        "populate":true
+      },
+      "Ville":{
+        "type":"varchar(25)",
+        "col":"ville",
+        "icon":"location_city",
+        "length":1
+      },
+      "Telephone":{
+        "type":"varchar(12)",
+        "col":"tel",
+        "label":"Téléphone",
+        "icon":"phone",
+        "length":1
+      },
+      "Photo":{
+        "type":"image",
+        "col":"photo"
+      }
+    },
+    "name": "Modifier le client",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "where":" type_contact < 2"
+  },
+  "VMLigneCommande": {
+    "table":"ligne_commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns":{
+      "Qte":{
+        "type":"int(7)",
+        "col":"qte",
+        "label":"Quantité",
+        "icon":"dynamic_feed"
+      },
+      "PU":{
+        "type":"decimal(10,2)",
+        "col":"pu",
+        "label":"Prix unitaire",
+        "icon":"money"
+      },
+      "Reduction":{
+        "type":"decimal(10,2)",
+        "col":"reduction",
+        "label":"Réduction",
+        "icon":"trending_down"
+      }
+    },
+    "name": "Modifier mouvement",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "constants":[],
+    "where":" id_commande in (select id from commande where id_magasin=session(idMagasin) AND etat < 4)",
+    "ignore": true
+  },
+  "AnnulationCommande": {
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns":{},
+    "name":"Annulation de la commande",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "constants":[{
+      "col":"etat",
+      "value":"-1"
+    }],
+    "where":" etat < 4 AND id_magasin = session(idMagasin)",
+    "ignore":false
+  },
+  "AnnulationLigneCommande": {
+    "table": "ligne_commande",
+    "auth": [],
+    "columns":{},
+    "name":"Annuler la ligne de commande",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "in"
+      }
+    },
+    "constants":[{
+      "col":"etat",
+      "value":-1
+    }],
+    "where":" id_commande in (select id from commande where id_magasin=session(idMagasin) AND etat < 4)",
+    "ignore":false
+  },
+  "VMVersementCommande":{
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "Versement":{
+        "type":"decimal(10,2)",
+        "col":"versement",
+        "icon":"exit_to_app",
+        "length":3,
+        "suffixe": " da"
+      }
+    },
+    "name":"Verser à la commande",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "constants":[],
+    "where":" id_magasin=session(idMagasin)"
+  },
+  "VMClotureCommande":{
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "modePaiement": {
+        "type": "enum(Comptant,A terme,Par chèque)",
+        "col": "mode_paiement",
+        "label": "Mode Paiement",
+        "icon": "payment",
+        "required": false
+      },
+      "Signature":{
+        "type":"signature",
+        "col":"signature",
+        "label": "Signature client",
+        "icon":"create"
+      }     
+    },
+    "name":"Cloturer la commande",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "constants":[],
+    "where":" id_magasin=session(idMagasin)",
+    "ignore":false
+  },
+  "SignatureCommande":{
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {
+      "Signature":{
+        "type":"signature",
+        "col":"signature",
+        "label": "Signature client",
+        "icon":"create"
+      }     
+    },
+    "name":"Signer la commande",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "where":" id_magasin=session(idMagasin) AND etat = 4"
+  },
+  "AnnulationArrivee": {
+    "table":"commande",
+    "auth": [
+      [
+        {
+          "variable": "role",
+          "operator": "=",
+          "value": "vendeur"
+        }
+      ]
+    ],
+    "columns": {},
+    "name":"Annuler l'arrivée sélectionnée'",
+    "cond":{
+      "id":{
+        "col": "id",
+        "type": "int(12)",
+        "required": true,
+        "operator": "="
+      }
+    },
+    "constants":[{
+      "col":"etat",
+      "value":"Annulee"
+    }],
+    "where":" id_magasin=session(idMagasin) AND etat <> 'Cloturee'"
+  }
+}

@@ -1,0 +1,179 @@
+{
+    "AdminLignesCommande": {
+        "table": "v_lignes_commande_gle",
+        "auth": [
+            [
+                {
+                    "variable": "role",
+                    "operator": "=",
+                    "value": "Administrateur"
+                }
+            ],
+            [
+                {
+                    "variable": "role",
+                    "operator": "=",
+                    "value": "Superviseur"
+                }
+            ]
+        ],
+        "columns": {
+            "Nature": {
+                "type": "enum('Standard','PDV')",
+                "label": "Nature",
+                "suffix": "",
+                "filterable": false,
+                "col": "nature",
+                "icon": ""
+            },
+            "idCommande": {
+                "type": "int(11)",
+                "label": "idCommande",
+                "suffix": "",
+                "filterable": false,
+                "col": "id_commande",
+                "icon": ""
+            },
+            "Magasin": {
+                "type": "varchar(30)",
+                "label": "Magasin",
+                "suffix": "",
+                "filterable": false,
+                "col": "magasin",
+                "icon": "store"
+            },
+            "Employe": {
+                "type": "varchar(101)",
+                "label": "Employé",
+                "suffix": "",
+                "filterable": false,
+                "col": "employe",
+                "icon": "account_box"
+            },
+            "Client": {
+                "type": "varchar(50)",
+                "label": "Client",
+                "suffix": "",
+                "filterable": false,
+                "col": "client",
+                "icon": "account_circle"
+            },
+            "Marque": {
+                "type": "varchar(100)",
+                "label": "Marque",
+                "suffix": "",
+                "filterable": false,
+                "col": "marque",
+                "icon": "branding_watermark"
+            },
+            "Modele": {
+                "type": "varchar(255)",
+                "label": "Modèle",
+                "suffix": "",
+                "filterable": false,
+                "col": "modele",
+                "icon": ""
+            },
+            "Couleur": {
+                "type": "varchar(40)",
+                "label": "Couleur",
+                "suffix": "",
+                "filterable": false,
+                "col": "couleur",
+                "icon": ""
+            },
+            "Cout": {
+                "type": "decimal(12,2)",
+                "label": "Cout",
+                "suffix": "",
+                "filterable": false,
+                "col": "cout",
+                "icon": ""
+            },
+            "PU": {
+                "type": "decimal(12,2)",
+                "label": "Prix unitaire",
+                "suffix": "",
+                "filterable": false,
+                "col": "pu",
+                "icon": "attach_money"
+            },
+            "Reduction": {
+                "type": "decimal(12,2)",
+                "label": "Réduction",
+                "suffix": "",
+                "filterable": false,
+                "col": "reduction",
+                "icon": "money_off"
+            },
+            "Demandee": {
+                "type": "decimal(12,2)",
+                "label": "Demandee",
+                "suffix": "",
+                "filterable": false,
+                "col": "qte",
+                "icon": ""
+            },
+            "Preparee": {
+                "type": "decimal(12,2)",
+                "label": "Préparée",
+                "suffix": "",
+                "filterable": false,
+                "col": "qte_preparee",
+                "icon": ""
+            },
+            "Bonus": {
+                "type": "decimal(12,2)",
+                "label": "Bonus",
+                "suffix": "",
+                "filterable": false,
+                "col": "qte_bonus",
+                "icon": ""
+            },
+            "Montant": {
+                "type": "decimal(24,2)",
+                "label": "Montant",
+                "suffix": "",
+                "filterable": false,
+                "col": "montant",
+                "icon": ""
+            },
+            "Etat": {
+                "type": "varchar(11)",
+                "label": "Etat",
+                "suffix": "",
+                "filterable": false,
+                "col": "etat",
+                "icon": ""
+            },
+            "dhDemande": {
+                "type": "datetime",
+                "label": "Date Demande",
+                "suffix": "",
+                "filterable": false,
+                "col": "date_heure",
+                "icon": "today"
+            },
+            "dhCloture": {
+                "type": "datetime",
+                "label": "Date Cloture",
+                "suffix": "",
+                "filterable": false,
+                "col": "dh_cloture",
+                "icon": "event_available"
+            },
+            "Type": {
+                "type": "enum('Vente','Retour','Retour fournisseur')",
+                "label": "Type",
+                "suffix": "",
+                "filterable": false,
+                "col": "type",
+                "icon": ""
+            }
+        },
+        "where": [],
+        "limit": [],
+        "name": "AdminLignesCommande",
+        "cache_delay": "5000"
+    }
+}
