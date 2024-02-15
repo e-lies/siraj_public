@@ -153,51 +153,17 @@ const Bars = props=>{
             padding={0.3}
             colors={{ scheme: 'set1' }}
            // colorBy="id"
-            /*defs={[
-                {
-                    "id": "dots",
-                    "type": "patternDots",
-                    "background": "inherit",
-                    "color": "#38bcb2",
-                    "size": 4,
-                    "padding": 1,
-                    "stagger": true
-                },
-                {
-                    "id": "lines",
-                    "type": "patternLines",
-                    "background": "inherit",
-                    "color": "#eed312",
-                    "rotation": -45,
-                    "lineWidth": 6,
-                    "spacing": 10
-                }
-            ]}*/
             markers={[...markers,mark]}
-        /*    fill={[
-                {
-                    "match": {
-                        "id": "fries"
-                    },
-                    "id": "dots"
-                },
-                {
-                    "match": {
-                        "id": "sandwich"
-                    },
-                    "id": "lines"
-                }
-            ]} */
             borderColor="inherit:darker(1.6)"
             axisTop={null}
             axisRight={null}
             axisBottom={{
-                "tickSize": 5,
+                "tickSize": 3,
                 "tickPadding": 5,
-                "tickRotation": 0,
+                "tickRotation": -30,
                 "legend": X,
                 "legendPosition": "middle",
-                "legendOffset": 32
+                "legendOffset": 42
             }}
             axisLeft={{
                 "tickSize": 5,
