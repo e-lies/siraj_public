@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { render } from 'react-dom'
-import { ResponsiveHeatMap } from '@nivo/heatmap'
+import React from "react";
+import PropTypes from "prop-types";
+import { render } from "react-dom";
+import { ResponsiveHeatMap } from "@nivo/heatmap";
 
 /*let data = [
   {
@@ -228,80 +228,114 @@ import { ResponsiveHeatMap } from '@nivo/heatmap'
     "udon": 38,
     "udonColor": "hsl(231, 70%, 50%)"
   }
-]; */
+]; 
+const data = [
+  {
+    "1": 8960778.8,
+    "2": 1840000,
+    "3": 317950,
+    "4": 315212,
+    "5": 10500,
+    "7": 14000,
+    "8": 98560,
+    "12": 500,
+    null: 30562244.77,
+    Nature: "Standard",
+  },
+  {
+    "1": 1556509,
+    "2": 0,
+    "3": 1600,
+    "4": 0,
+    "5": 0,
+    "7": 0,
+    "8": 0,
+    "12": 0,
+    //null: 1558109,
+    Nature: "Production",
+  },
+];
+const keys = ["1", "2", "3", "4", "5", "7", "8", "12", "null"];
+const index = "Nature";
+const group = "idMagasin";*/
 
-const Matrix = props =>{
-	const { data, index, Y, keys, onPointClick, width, height } = props;
+const Matrix = (props) => {
+  const { data, index, Y, keys, onPointClick, width, height } = props;
   const haut = data.length;
-  const long = data.reduce((a,c)=>Math.max(Object.keys(c).length,a),0)
-	return(
-	  <div 
+  const long = data.reduce((a, c) => Math.max(Object.keys(c).length, a), 0);
+  return (
+    <div
       id="chartMatrix"
-      style={{height:200+haut*30, width:(document.body.clientWidth > 400 ? 200 : 100) + long*100,overflowY:'scroll',paddingRight:24}}
+      style={{
+        height: 200 + haut * 30,
+        width: (document.body.clientWidth > 400 ? 200 : 100) + long * 100,
+        overflowY: "scroll",
+        paddingRight: 24,
+      }}
     >
-		<ResponsiveHeatMap
+      <ResponsiveHeatMap
         data={data}
         keys={keys}
         indexBy={index}
         onClick={onPointClick}
         margin={{
-            "top": 73,
-            "right": 87,
-            "bottom": 40,
-            "left": 114
+          top: 73,
+          right: 87,
+          bottom: 40,
+          left: 114,
         }}
         forceSquare={false}
         sizeVariation={0.6}
         padding={0}
         colors="nivo"
         axisTop={{
-            "orient": "top",
-            "tickSize": 6,
-            "tickPadding": 8,
-            "tickRotation": 45,
-            "legend": "",
-            "legendOffset": -18
+          orient: "top",
+          tickSize: 6,
+          tickPadding: 8,
+          tickRotation: 45,
+          legend: "",
+          legendOffset: -18,
         }}
         axisRight={null}
         axisBottom={{
-            "orient": "bottom",
-            "tickSize": 5,
-            "tickPadding": 5,
-            "tickRotation": -45,
-            "legend": index,
-            "legendPosition": "middle",
-            "legendOffset": 36
+          orient: "bottom",
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: -45,
+          legend: index,
+          legendPosition: "middle",
+          legendOffset: 36,
         }}
         axisLeft={{
-            "orient": "left",
-            "tickSize": 5,
-            "tickPadding": 5,
-            "tickRotation": 0,
-            "legend": Y,
-            "legendPosition": "left",
-            "legendOffset": 0
+          orient: "left",
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: Y,
+          legendPosition: "left",
+          legendOffset: 0,
         }}
         enableGridX={true}
         enableGridY={true}
         cellShape="circle"
         cellOpacity={0.7}
-        enableLabels={long*haut < 40}
+        enableLabels={long * haut < 40}
         labelTextColor="inherit:darker(2.5)"
         defs={[
-            {
-                "id": "lines",
-                "type": "patternLines",
-                "background": "inherit",
-                "color": "rgba(0, 0, 0, 0.1)",
-                "rotation": -45,
-                "lineWidth": 4,
-                "spacing": 7
-            }
+          {
+            id: "lines",
+            type: "patternLines",
+            background: "inherit",
+            //color: "rgba(0, 0, 0, 0.1)",
+            rotation: -45,
+            lineWidth: 4,
+            spacing: 7,
+          },
         ]}
         fill={[
-            {
-                "id": "lines"
-            }
+          {
+            id: "lines",
+          },
         ]}
         animate={true}
         motionStiffness={240}
@@ -309,21 +343,24 @@ const Matrix = props =>{
         hoverTarget="cell"
         cellHoverOpacity={0.95}
         cellHoverOthersOpacity={0.25}
-    /></div>
-	)
-}
+      />
+    </div>
+  );
+};
 Matrix.propTypes = {
-	keys: PropTypes.array.isRequired,
+  keys: PropTypes.array.isRequired,
   click: PropTypes.func,
   index: PropTypes.string,
   onPointClick: PropTypes.func,
   height: PropTypes.number,
   width: PropTypes.number,
-}
+};
 Matrix.defaultProps = {
-  width: '100%',
+  width: "100%",
   height: 400,
-  click : e => {return false},
-  onPointClick: e=>console.log(e)
-}
+  click: (e) => {
+    return false;
+  },
+  onPointClick: (e) => console.log(e),
+};
 export default Matrix;

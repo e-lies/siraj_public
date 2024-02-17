@@ -1,9 +1,9 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { render } from 'react-dom'
-import { ResponsiveBar } from '@nivo/bar'
+import React from "react";
+import PropTypes from "prop-types";
+import { render } from "react-dom";
+import { ResponsiveBar } from "@nivo/bar";
 
- /*let infos=[
+/*let infos=[
   {
     "country": "AD",
     "hot dog": 59,
@@ -119,88 +119,121 @@ const y = "Quantité";
 const group = "stacked";
 const index = "country";
 const keys =  ["hot dog", "burger", "sandwich", "spécial", "kebab", "fries", "donut"]*/
-const mark = {axis: 'y',
-              value: 0,
-              lineStyle: {stroke: '#222',strokeWidth: 2}
-            };
-const Bars = props=>{
-    const { data, grouped, keys, X, Y, markers, legend, onLegendClick, onPointClick, height, width } = props;
-    const points = data.reduce((acc,cur)=>{ return acc + Object.keys(cur).length },0);
-    const long = data.length
-    const haut = data.reduce((acc,cur)=>{ return Math.max(acc,Object.keys(cur).length) },0)
-    if(points < 3001){
-      let ddt = data.sort((s1,s2)=>{
-        return -Object.keys(s1).reduce((a,c)=>{return typeof s1[c]==='number' ? a+parseInt(s1[c]) : a},0) + Object.keys(s2).reduce((a,c)=>{return typeof s2[c]==='number' ? a+parseInt(s2[c]) : a},0)
-      })
-        return(
-          <div 
-            id="chartBar" 
-            style={{height:350+(grouped ? 0 : haut*10), width:(document.body.clientWidth > 450 ? 450 : 330) + (long*50)+ (grouped ? haut*15 : 0),overflowY:'scroll',paddingRight:36}}
-          >
-            <ResponsiveBar 
-            data={ddt}
-            onClick={onPointClick} 
-            groupMode={grouped ? "grouped" : "stacked"}   //grouped/stacked
-            keys={keys}
-            enableGridX={true}
-            indexBy={X}
-            margin={{
-                "top": 50,
-                "right": 130,
-                "bottom": 50,
-                "left": 60
-            }}
-            padding={0.3}
-            colors={{ scheme: 'set1' }}
-           // colorBy="id"
-            markers={[...markers,mark]}
-            borderColor="inherit:darker(1.6)"
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-                "tickSize": 3,
-                "tickPadding": 5,
-                "tickRotation": -30,
-                "legend": X,
-                "legendPosition": "middle",
-                "legendOffset": 42
-            }}
-            axisLeft={{
-                "tickSize": 5,
-                "tickPadding": 5,
-                "tickRotation": 0,
-                "legend": Y,
-                "legendPosition": "middle",
-                "legendOffset": -40
-            }}
-            labelSkipWidth={12}
-            labelSkipHeight={10}
-            labelTextColor="inherit:darker(1.6)"
-            animate={true}
-            motionStiffness={90}
-            motionDamping={15}
-            legends={[
-              {
-                  dataFrom: 'keys',
-                  anchor: 'right',
-                  direction: 'column',
-                  justify: false,
-                  translateX: 150,
-                  translateY: 0,
-                  itemWidth: 100,
-                  itemHeight: 20,
-                  itemsSpacing: 0,
-                  symbolSize: 20,
-                  itemDirection: 'left-to-right'
-              }
+const mark = {
+  axis: "y",
+  value: 0,
+  lineStyle: { stroke: "#222", strokeWidth: 2 },
+};
+
+const Bars = (props) => {
+  const {
+    data,
+    grouped,
+    keys,
+    X,
+    Y,
+    markers,
+    legend,
+    onLegendClick,
+    onPointClick,
+    height,
+    width,
+  } = props;
+  const points = data.reduce((acc, cur) => {
+    return acc + Object.keys(cur).length;
+  }, 0);
+  const long = data.length;
+  const haut = data.reduce((acc, cur) => {
+    return Math.max(acc, Object.keys(cur).length);
+  }, 0);
+  if (points < 3001) {
+    let ddt = data.sort((s1, s2) => {
+      return (
+        -Object.keys(s1).reduce((a, c) => {
+          return typeof s1[c] === "number" ? a + parseInt(s1[c]) : a;
+        }, 0) +
+        Object.keys(s2).reduce((a, c) => {
+          return typeof s2[c] === "number" ? a + parseInt(s2[c]) : a;
+        }, 0)
+      );
+    });
+    return (
+      <div
+        id="chartBar"
+        style={{
+          height: 350 + (grouped ? 0 : haut * 10),
+          width:
+            (document.body.clientWidth > 450 ? 450 : 330) +
+            long * 50 +
+            (grouped ? haut * 15 : 0),
+          overflowY: "scroll",
+          paddingRight: 36,
+        }}
+      >
+        <ResponsiveBar
+          data={ddt}
+          onClick={onPointClick}
+          groupMode={grouped ? "grouped" : "stacked"} //grouped/stacked
+          keys={keys}
+          enableGridX={true}
+          indexBy={X}
+          margin={{
+            top: 50,
+            right: 130,
+            bottom: 50,
+            left: 60,
+          }}
+          padding={0.3}
+          colors={{ scheme: "set1" }}
+          // colorBy="id"
+          markers={[...markers, mark]}
+          borderColor="inherit:darker(1.6)"
+          axisTop={null}
+          axisRight={null}
+          axisBottom={{
+            tickSize: 3,
+            tickPadding: 3,
+            tickRotation: -26,
+            legend: X,
+            legendPosition: "middle",
+            legendOffset: 42,
+          }}
+          axisLeft={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: Y,
+            legendPosition: "middle",
+            legendOffset: -40,
+          }}
+          labelSkipWidth={12}
+          labelSkipHeight={10}
+          labelTextColor="inherit:darker(1.6)"
+          animate={true}
+          motionStiffness={90}
+          motionDamping={15}
+          legends={[
+            {
+              dataFrom: "keys",
+              anchor: "right",
+              direction: "column",
+              justify: false,
+              translateX: 150,
+              translateY: 0,
+              itemWidth: 100,
+              itemHeight: 20,
+              itemsSpacing: 0,
+              symbolSize: 20,
+              itemDirection: "left-to-right",
+            },
           ]}
-        /></div>            
-    )
+        />
+      </div>
+    );
+  } else {
+    return <h4> Trop d'information à représenter !! </h4>;
   }
-  else{
-    return (<h4> Trop d'information à représenter !! </h4>)
-  }
-}
+};
 Bars.propTypes = {
   data: PropTypes.array.isRequired,
   X: PropTypes.string.isRequired,
@@ -221,19 +254,21 @@ Bars.propTypes = {
   /**
    * Evénement à éxecuter quand on clique sur un point du graphe
    */
-  onPointClick: PropTypes.func
-}
+  onPointClick: PropTypes.func,
+};
 Bars.defaultProps = {
-    onClick : e => {console.log(e)},
-    markers: [],
-    grouped: true,
-    legend: true,
-    height: 400,
-    width: '85%',
-    onLegendClick: e=>console.log(e),
-    onPointClick: e=>console.log(e)
-//    x:"Type",
- //   y: "Quantité",
- //   index :"country",
- };
+  onClick: (e) => {
+    console.log(e);
+  },
+  markers: [],
+  grouped: true,
+  legend: true,
+  height: 400,
+  width: "85%",
+  onLegendClick: (e) => console.log(e),
+  onPointClick: (e) => console.log(e),
+  //    x:"Type",
+  //   y: "Quantité",
+  //   index :"country",
+};
 export default Bars;

@@ -81,6 +81,7 @@ export function FormPies(props) {
       if (
         schema.columns[cur].type.includes('char')
         || schema.columns[cur].type.includes('enum')
+        || schema.columns[cur].type.includes('set')
         || schema.columns[cur].type.includes('foreign')
       ) {
         acc.labels = acc.labels.concat({ label: schema.columns[cur].label || cur, value: cur });
@@ -151,6 +152,7 @@ export function FormBars(props) {
         type.includes('char')
         || type.includes('foreign')
         || type.includes('enum')
+        || type.includes('set')
         || type.includes('int')
         || type === 'date'
       ) {
@@ -160,6 +162,7 @@ export function FormBars(props) {
         type.includes('char')
         || type.includes('foreign')
         || type.includes('enum')
+        || type.includes('set')        
         || type.includes('int')
         || type === 'date'
       ) {
@@ -237,7 +240,7 @@ export function FormLines(props) {
   const possibles = Object.keys(schema.columns).reduce(
     (acc, cur) => {
       const { type } = schema.columns[cur];
-      if (type.includes('char') || type.includes('enum') || type.includes("foreign") || type.includes('int')) {
+      if (type.includes('char') || type.includes('enum') || type.includes('set') || type.includes("foreign") || type.includes('int')) {
         acc.id.push({ label: schema.columns[cur].label || cur, value: cur });
       }
       if (type.includes('date') || type.includes('time')) {
@@ -368,6 +371,7 @@ export function FormMatrix(props) {
         type.includes('char')
         || type.includes('foreign')
         || type.includes('enum')
+        || type.includes('set')
         || type.includes('int')
         || type === 'date'
       ) {
@@ -435,6 +439,7 @@ export function FormRadars(props) {
         type.includes('char')
         || type.includes('foreign')
         || type.includes('enum')
+        || type.includes('set')
         || type.includes('int')
         || type === 'date'
       ) {

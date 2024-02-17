@@ -19,6 +19,8 @@ import {
   Popover,
   Badge,
   Collapse,
+  TextField,
+  InputAdornment,
 } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -28,14 +30,20 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { globalType, filt, displayFilter, extractAddress } from "../../reducers/Functions";
+import {
+  globalType,
+  filt,
+  displayFilter,
+  extractAddress,
+} from "../../reducers/Functions";
 import Filtres from "../Filtres";
 import FilterElement from "../FilterElement";
 import SpeedDials from "./SpeedDials";
 import { useSize, SwipeRevealItem } from "../../reducers/Hooks";
 //import { useSpeechSynthesis } from '../../context/SpeechSynthesis';
 //import { RecognizerContext } from '../../context/recognizerContext';
-import { handleExport } from '../../reducers/excelExport';
+import handleExport from "../../reducers/excelExport";
+//import Fuse from "fuse.js";
 
 const useStyles1 = makeStyles((theme) => ({
   root: {
@@ -119,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   table: {
     //width: '100%',
     overflow: "scroll",
-    display:'absolute'
+    display: "absolute",
   },
   barre: {
     width: "100%",
@@ -160,7 +168,10 @@ const useStyles = makeStyles((theme) => ({
   tooltipTitle: {
     whiteSpace: "nowrap",
     marginRight: 16,
-    marginLeft: 16
+    marginLeft: 16,
+    fontFamily: "Roboto",
+    fontWeight: "bold",
+    color: theme.palette.primary.main,
   },
   oddRows: {
     backgroundColor: theme.palette.background.default, //theme.palette.action.hover,
@@ -196,13 +207,13 @@ function reducer(state, action) {
         ...state,
         visibleFilter: state.visibleFilter.includes(action.col)
           ? [] //state.visibleFilter.filter((v) => v !== action.col)
-          : [action.col] //state.visibleFilter.concat(action.col),
+          : [action.col], //state.visibleFilter.concat(action.col),
       };
     case "filter":
-      let fil = state.filters.filter((f) => f.label !== action.col);
+      let fil = state.filters.filter((f) => f.col !== action.col);
       return { ...state, filters: [...fil, ...action.filters], page: 0 };
     case "inverseFilter":
-      return {...state, inverseFilter: !state.inverseFilter, page: 0}
+      return { ...state, inverseFilter: !state.inverseFilter, page: 0 };
     case "cols":
       return {
         ...state,
@@ -227,7 +238,8 @@ function reducer(state, action) {
         filters: [],
         order: [],
         checked: [],
-        inverseFilter: false
+        search: { active: false, text: null },
+        inverseFilter: false,
       };
       break;
     case "open":
@@ -340,7 +352,8 @@ const ClientTab = (props) => {
     dbClickFilter,
     speechRecognition,
     headerFct,
-    exports
+    exports,
+    searchCols,
   } = props;
   const theme = useTheme();
   const [state, dispatch] = useReducer(reducer, {
@@ -355,26 +368,32 @@ const ClientTab = (props) => {
     checked: defaultChecked,
     open: [],
   });
-  
+
   //const SP = useSpeechSynthesis()
   //const reco =  React.useContext(RecognizerContext)
   const classes = useStyles();
   const { width } = useSize(id);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [search, setSearch] = React.useState({ text: null, active: false });
+  const [dt, setDt] = React.useState([]);
   //const [speech,setSpeech] = React.useState()
   const tableComponent = useRef(null);
 
   useEffect(() => {
-    if (schema.columns) {
+    if (schema?.columns) {
       let w =
         width -
         (checkedFunctions ? baseWidth(width) : 0) -
         (collapses.length || 0) * baseWidth(width) -
-        (lineFunctions.length > 0 ? (speedFct ? 0.5 : (lineFunctions.length/2)) : 0) *
+        (lineFunctions.length > 0
+          ? speedFct
+            ? 0.5
+            : lineFunctions.length / 2
+          : 0) *
           baseWidth(width);
       dispatch({ type: "cols", columns: schema.columns, width: w, hidden });
     }
-  }, [width, JSON.stringify(schema.columns), JSON.stringify(hidden)]);
+  }, [width, JSON.stringify(schema?.columns), JSON.stringify(hidden)]);
   useEffect(() => {
     dispatch({ type: "colStep", colStep: 0 });
   }, [JSON.stringify(state.cols)]);
@@ -385,10 +404,11 @@ const ClientTab = (props) => {
   }, [JSON.stringify(defaultFilter)]);
   useEffect(() => {
     dispatch({ type: "reset" });
-  }, [JSON.stringify(props[schema]), JSON.stringify(props[filterKeys])]);
+  }, [JSON.stringify(schema), JSON.stringify(filterKeys)]);
   useEffect(() => {
     dispatch({ type: "checked", checked: [] });
-    onChangeParams && onChangeParams({filters:state.filters,order:state.order})
+    onChangeParams &&
+      onChangeParams({ filters: state.filters, order: state.order });
     //setTimeout(()=>SP.setParam('text',dt.length+' résultats'),1000)
   }, [JSON.stringify(state.filters), JSON.stringify(state.order)]);
   useEffect(() => {
@@ -397,8 +417,7 @@ const ClientTab = (props) => {
   useEffect(() => {
     dispatch({ type: "rows", rpp: defaultRpp });
   }, [defaultRpp]);
-  
-  let dt = [];
+
   const selectAll = (long) => {
     const checked = [];
     if (state.checked.length < long) {
@@ -427,34 +446,81 @@ const ClientTab = (props) => {
   const lf = lineFunctions || [];
 
   const { order, filters, rpp, page, checked } = state;
-  if (data !== undefined) {
-    dt =
-      state.order.length > 0
-        ? filt(data, filters, schema.columns,state.inverseFilter).sort(
-            sorting(
-              globalType(schema.columns[order[0].col].type),
-              order[0].ordre,
-              order[0].col
+  const update = () => {
+    let ddt = data;
+    if (data !== undefined) {
+      ddt =
+        state.order && state.order.length > 0 && schema.columns[order[0].col]
+          ? filt(
+              data || [],
+              filters || [],
+              schema?.columns || {},
+              state.inverseFilter
+            ).sort(
+              sorting(
+                globalType(schema.columns[order[0].col]?.type),
+                order[0].ordre,
+                order[0].col
+              )
             )
-          )
-        : filt(data, filters, schema.columns,state.inverseFilter);
-  }
-  const dispData = dt.slice(
-    parseInt(page) * rpp,
-    parseInt(parseInt(page) * rpp) + parseInt(rpp)
-  );
-  if (expressions && expressions.length > 0) {
+          : filt(
+              data || [],
+              filters || [],
+              schema?.columns || {},
+              state.inverseFilter
+            );
+    }
+    if (expressions && expressions.length > 0) {
+      ddt = ddt.map((d) => {
+        expressions.forEach((exp) => {
+          d[exp.title] =
+            typeof exp.exp === "string"
+              ? eval(exp.exp)
+              : exp.colType === "float"
+              ? parseFloat(exp.exp(d))
+              : exp.exp(d);
+        });
+        return d;
+      });
+    }
+    setDt(ddt);
+  };
+  useEffect(() => {
+    if (search.active) {
+      update();
+      //setSearch({ text: null, active: false });
+    }
+  }, [search.text]);
+  useEffect(() => {
+    update();
+    setSearch({ text: null, active: false });
+  }, [
+    JSON.stringify(data),
+    JSON.stringify(filters),
+    JSON.stringify(order),
+    JSON.stringify(expressions),
+    JSON.stringify(state.inverseFilter),
+  ]);
+
+  /*if (expressions && expressions.length > 0) {
     dispData.map((d) => {
       expressions.map((exp) => {
-        d[exp.title] = eval(exp.exp);
+        d[exp.title] = typeof exp.exp === "string" ? eval(exp.exp) : exp.exp(d);
         return false;
       });
       return false;
     });
-  }
+  }*/
   let cf = checkedFunctions || [];
-  if(exports){
-    cf = [...cf,{icon:'cloud_download',title:'Exporter',fct:data=>handleExport(data,schema.columns,'Export',hidden)}]
+  if (exports) {
+    cf = [
+      ...cf,
+      {
+        icon: "cloud_download",
+        title: "Exporter",
+        fct: (data) => handleExport(data, schema.columns, "Export", hidden),
+      },
+    ];
   }
   const possiblePage =
     dt.length < 6
@@ -464,6 +530,11 @@ const ClientTab = (props) => {
       : dt.length < 101
       ? [5, 10, 20, dt.length]
       : [5, 10, 20, 100];
+
+  let dispData = dt.slice(
+    parseInt(page) * rpp,
+    parseInt(parseInt(page) * rpp) + parseInt(rpp)
+  );
 
   const tabHeader = (visible) => (
     <TableRow
@@ -476,7 +547,7 @@ const ClientTab = (props) => {
     >
       {cf && cf.length > 0 && (
         <TableCell
-          style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
+          style={{ width: parseInt(baseWidth(width) * 0.5), padding: 0 }}
           component="td"
         >
           <Checkbox
@@ -489,27 +560,31 @@ const ClientTab = (props) => {
         </TableCell>
       )}
       {collapses &&
-        collapses.map((clp) => (
-          <TableCell
-            style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
-            component="td"
-          >
-            <div
-              style={{
-                color: theme.palette.secondary.light,
-                fontSize: 8,
-                width: 40,
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography variant="body2"> {clp.title} </Typography>
-            </div>
-          </TableCell>
-        ))}
+        collapses.map((clp) => {
+          return (
+            !clp.col && (
+              <TableCell
+                style={{ width: parseInt(baseWidth(width) * 0.5), padding: 0 }}
+                component="td"
+              >
+                <div
+                  style={{
+                    color: theme.palette.secondary.light,
+                    fontSize: 8,
+                    width: 40,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="body2"> {clp.title} </Typography>
+                </div>
+              </TableCell>
+            )
+          );
+        })}
       {speedFct ? (
         <TableCell
-          style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
+          style={{ width: parseInt(baseWidth(width) * 0.5), padding: 0 }}
           component="th"
         >
           <Typography
@@ -528,7 +603,7 @@ const ClientTab = (props) => {
         lf.map((f) => (
           <TableCell
             component="th"
-            style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
+            style={{ width: parseInt(baseWidth(width) * 0.5), padding: 0 }}
           >
             <div
               style={{
@@ -544,172 +619,206 @@ const ClientTab = (props) => {
           </TableCell>
         ))
       )}
-      {// les labels de colonnes avec tri
-      Object.keys(schema.columns).map((col) => {
-        let length = schema.columns[col].length || 2;
-        if (visible.includes(col)) {
-          const or = state.order.filter((ord) => ord.col === col);
-          const design =
-            or.length > 0
-              ? or[0].ordre === "desc"
-                ? { icon: "arrow_downward", classe: "thSel" }
-                : { icon: "arrow_upward", classe: "thSel" }
-              : { icon: "import_export", classe: "th" };
-          return (
-            <TableCell component="th" style={{ width: baseWidth(width) * length, padding: paddings }}>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
-                <div
-                  className={classes[design.classe]}
-                >
-                  {width > 500 && (
-                    <Icon style={{ flex: 1 }}>
-                      {schema.columns[col].icon}
-                    </Icon>
-                  )}
-                  <IconButton
-                    onClick={(e) => {
-                      dispatch({ type: "order", col });
-                    }}
-                    color="inherit"
-                    style={{ flex: 3, display: "flex", padding: 0 }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      style={{
-                        maxWidth: (baseWidth(width)-15) * length
-                      }}
-                      className={classes.headerTypography}
-                    >
-                      {schema.columns[col].label || col}
-                    </Typography>
-                  </IconButton>
-                  <IconButton
-                    onClick={(e) => {
-                      dispatch({ type: "order", col });
-                    }}
-                    color="inherit"
-                    style={{ flex: 1, display: "flex", padding: 0 }}
-                  >
-                    <Icon> {design.icon} </Icon>
-                  </IconButton>
-                  {filterKeys &&
-                    (filterKeys.length === 0 || filterKeys.includes(col)) &&
-                    !["color", "image", "images", "file", "files"].includes(
-                      schema.columns[col].type
-                    ) && (
-                      <div style={{ flex: 1 }}>
-                        <IconButton
-                          style={{ padding: paddings }}
-                          color={
-                            state.visibleFilter.includes(col)
-                              ? "primary"
-                              : state.filters.filter((f) => f.label === col)
-                                  .length > 0
-                              ? "secondary"
-                              : "inherit"
-                          }
-                          onClick={(e) => {
-                            setFilterAnchor(e);
-                            dispatch({ type: "visibleFilter", col });
-                          }}
-                        >
-                          <Icon> filter_list </Icon>
-                        </IconButton>
-                        <Popover
-                          id={`popover_${title}`}
-                          open={state.visibleFilter.includes(col)}
-                          anchorEl={anchorEl}
-                          onClose={(e) =>
-                            dispatch({ type: "visibleFilter", col })
-                          }
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "center",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "center",
-                          }}
-                        >
-                          <FilterElement
-                            ind={0} //pour l'autofocus
-                            column={schema.columns[col]}
-                            label={col}
-                            value={state.filters.filter((f) => f.label === col)}
-                            speech={true}
-                            extension={(k, c, v) => {
-                              return ( <div style={{display:'flex'}}>
-                                <IconButton
-                                  //color={state.filters.filter((f) => f.label === col).length > 0 && state.filters.filter((f) => f.label === col)['inverse'] ? "error" : "default"}
-                                  onClick={() => {
-                                    dispatch({
-                                      type: "filter",
-                                      col,
-                                      filters: state.filters.filter(f=>f.label===col).map(ff=>{return {...ff,inverse:ff.inverse ? false : true}}),
-                                    });
-                                  }}
-                                >
-                                  <Icon color={state.filters.filter((f) => f.label === col).length > 0 && state.filters.filter((f) => f.label === col)[0]['inverse'] ? "error" : "default"}>
-                                    swap_calls
-                                  </Icon>
-                                </IconButton>
-                                <IconButton
-                                  color="secondary"
-                                  onClick={() => {
-                                    dispatch({
-                                      type: "filter",
-                                      col,
-                                      filters: [],
-                                    });
-                                    dispatch({ type: "visibleFilter", col });
-                                  }}
-                                >
-                                  <Icon>refresh</Icon>
-                                </IconButton>
-                                </div>
-                              );
-                            }}
-                            onChange={(v) =>
-                              dispatch({ type: "filter", col, filters: v })
-                            }
-                          />
-                        </Popover>
-                      </div>
-                    )}
-              <Tooltip
-                title={state.filters
-                  .filter((f) => f.label === col)
-                  .map((exp) => displayFilter(exp))
-                  .join(" et ")}
+      {
+        // les labels de colonnes avec tri
+        Object.keys(schema.columns).map((col) => {
+          let length = schema.columns[col].length || 2;
+          if (visible.includes(col)) {
+            const or = state.order.filter((ord) => ord.col === col);
+            const design =
+              or.length > 0
+                ? or[0].ordre === "desc"
+                  ? { icon: "arrow_downward", classe: "thSel" }
+                  : { icon: "arrow_upward", classe: "thSel" }
+                : { icon: "import_export", classe: "th" };
+            return (
+              <TableCell
+                component="th"
+                style={{ width: baseWidth(width) * length, padding: paddings }}
               >
-                <div>
-                  {state.filters.filter((f) => f.label === col).length > 0 && (
-                    <Typography
-                      style={{
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        width: baseWidth(width) * length,
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <div className={classes[design.classe]}>
+                    {width > 500 && (
+                      <Icon style={{ flex: 1 }}>
+                        {schema.columns[col].icon}
+                      </Icon>
+                    )}
+                    <IconButton
+                      onClick={(e) => {
+                        dispatch({ type: "order", col });
                       }}
-                      color="secondary"
-                      variant="subtitle2"
+                      color="inherit"
+                      style={{ flex: 3, display: "flex", padding: 0 }}
                     >
-                      {state.filters
-                        .filter((f) => f.label === col)
+                      <Typography
+                        variant="subtitle2"
+                        style={{
+                          maxWidth: (baseWidth(width) - 15) * length,
+                        }}
+                        className={classes.headerTypography}
+                      >
+                        {schema?.columns[col].label || col}
+                      </Typography>
+                    </IconButton>
+                    <IconButton
+                      onClick={(e) => {
+                        dispatch({ type: "order", col });
+                      }}
+                      color="inherit"
+                      style={{ flex: 1, display: "flex", padding: 0 }}
+                    >
+                      <Icon> {design.icon} </Icon>
+                    </IconButton>
+                    {filterKeys &&
+                      (filterKeys.length === 0 || filterKeys.includes(col)) &&
+                      !["color", "image", "images", "file", "files"].includes(
+                        schema.columns[col].type
+                      ) && (
+                        <div style={{ flex: 1 }}>
+                          <IconButton
+                            style={{ padding: paddings }}
+                            color={
+                              state.visibleFilter.includes(col)
+                                ? "primary"
+                                : state.filters.filter((f) => f.col === col)
+                                    .length > 0
+                                ? "secondary"
+                                : "inherit"
+                            }
+                            onClick={(e) => {
+                              setFilterAnchor(e);
+                              dispatch({ type: "visibleFilter", col });
+                            }}
+                          >
+                            <Icon> filter_list </Icon>
+                          </IconButton>
+                          <Popover
+                            id={`popover_${title}`}
+                            open={state.visibleFilter.includes(col)}
+                            anchorEl={anchorEl}
+                            onClose={(e) =>
+                              dispatch({ type: "visibleFilter", col })
+                            }
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                          >
+                            <FilterElement
+                              ind={0} //pour l'autofocus
+                              column={schema.columns[col]}
+                              label={col}
+                              value={state.filters.filter((f) => f.col === col)}
+                              speech={true}
+                              extension={(k, c, v) => {
+                                return (
+                                  <div style={{ display: "flex" }}>
+                                    <IconButton
+                                      //color={state.filters.filter((f) => f.label === col).length > 0 && state.filters.filter((f) => f.label === col)['inverse'] ? "error" : "default"}
+                                      onClick={() => {
+                                        dispatch({
+                                          type: "filter",
+                                          col,
+                                          filters: state.filters
+                                            .filter((f) => f.col === col)
+                                            .map((ff) => {
+                                              return {
+                                                ...ff,
+                                                inverse: ff.inverse
+                                                  ? false
+                                                  : true,
+                                              };
+                                            }),
+                                        });
+                                      }}
+                                    >
+                                      <Icon
+                                        color={
+                                          state.filters.filter(
+                                            (f) => f.col === col
+                                          ).length > 0 &&
+                                          state.filters.filter(
+                                            (f) => f.col === col
+                                          )[0]["inverse"]
+                                            ? "error"
+                                            : "default"
+                                        }
+                                      >
+                                        swap_calls
+                                      </Icon>
+                                    </IconButton>
+                                    <IconButton
+                                      color="secondary"
+                                      onClick={() => {
+                                        dispatch({
+                                          type: "filter",
+                                          col,
+                                          filters: [],
+                                        });
+                                        dispatch({
+                                          type: "visibleFilter",
+                                          col,
+                                        });
+                                      }}
+                                    >
+                                      <Icon>refresh</Icon>
+                                    </IconButton>
+                                  </div>
+                                );
+                              }}
+                              onChange={(v) =>
+                                dispatch({ type: "filter", col, filters: v })
+                              }
+                            />
+                          </Popover>
+                        </div>
+                      )}
+                    <Tooltip
+                      title={state.filters
+                        .filter((f) => f.col === col)
                         .map((exp) => displayFilter(exp))
                         .join(" et ")}
-                    </Typography>
-                  )}
+                    >
+                      <div>
+                        {state.filters.filter((f) => f.col === col).length >
+                          0 && (
+                          <Typography
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              width: baseWidth(width) * length,
+                            }}
+                            color="secondary"
+                            variant="subtitle2"
+                          >
+                            {state.filters
+                              .filter((f) => f.col === col)
+                              .map((exp) => displayFilter(exp))
+                              .join(" et ")}
+                          </Typography>
+                        )}
+                      </div>
+                    </Tooltip>
+                  </div>
+                  {headerFct && <>{headerFct(col, dt, schema.columns[col])}</>}
                 </div>
-              </Tooltip>
-              </div>
-              { headerFct && (<>{ headerFct(col,dt,schema.columns[col]) }</>) }
-              </div>
-            </TableCell>
-          );
-        }
-        return false;
-      })}
+              </TableCell>
+            );
+          }
+          return false;
+        })
+      }
     </TableRow>
   );
   // if(data && schema && schema.columns && data.length > 0){
@@ -725,22 +834,19 @@ const ClientTab = (props) => {
         element.clientWidth
       }px)`;
       element.style.opacity = 0;
-      setTimeout(
-        () => {
-          dispatch({
-            colStep: state.colStep - direction[0],
-            type: "colStep",
-          });
-          setTimeout(() => {
-            element.style.opacity = 1;
-            element.style.transform = "none";
-          }, 50);
-          element.style.transform = `translateX(${
-            direction[0] === -1 ? "" : "-"
-          }${element.clientWidth}px)`;
-        },
-        50
-      );
+      setTimeout(() => {
+        dispatch({
+          colStep: state.colStep - direction[0],
+          type: "colStep",
+        });
+        setTimeout(() => {
+          element.style.opacity = 1;
+          element.style.transform = "none";
+        }, 50);
+        element.style.transform = `translateX(${
+          direction[0] === -1 ? "" : "-"
+        }${element.clientWidth}px)`;
+      }, 50);
     }
   });
   useEffect(() => {
@@ -750,7 +856,7 @@ const ClientTab = (props) => {
         `.swapBar`,
         `#${id}`,
         swipeCallback,
-        [60,60],
+        [60, 60],
         [true, false],
         [false, false],
         [true, true],
@@ -781,10 +887,13 @@ const ClientTab = (props) => {
     }
   },[JSON.stringify(reco.recognizerResult)])*/
   const actualCols = state.cols[state.colStep] || state.cols[0];
+  /*const fuse = searchCols
+    ? new Fuse(dt, { keys: searchCols, threshold: 0.4 })
+    : null; */
   return (
     <div>
       <div id="toolbar" className={classes.barre}>
-          {/* speechRecognition && ( <div style={{display:'flex',justifyContent:'center'}}>
+        {/* speechRecognition && ( <div style={{display:'flex',justifyContent:'center'}}>
             <IconButton 
               key="speakTab"
               onClick={e=>{
@@ -802,48 +911,63 @@ const ClientTab = (props) => {
             </IconButton>
           </div>
             )*/}
-          <div style={{ display: "flex", justifyContent: "start" }}>
-            <Tooltip
-              title={caption || title || schema['name']}
-              classes={{ tooltip: classes.tooltipTitle }}
+        <div
+          style={{
+            width: "100%",
+            marginLeft: 10,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Tooltip
+            title={caption || title || schema?.name}
+            classes={{ tooltip: classes.tooltipTitle }}
+          >
+            <Typography
+              className={classes.tooltipTitle}
+              variant={width < 500 ? "h6" : "h5"}
             >
-              <Typography className={classes.tooltipTitle} variant={width < 500 ? "h6" : "h6"}>
-                {title || schema['name'] || ""}
-              </Typography>
-            </Tooltip>
-            <div
-              id="tools"
-              style={{ display: "flex", flexWrap: "no-wrap", marginRight: 24 }}
-            >
-              {tools &&
-                tools.map((t) => {
-                  return t()
-                })}
-            </div>
+              {title || schema?.name || ""}
+            </Typography>
+          </Tooltip>
+          <div
+            id="tools"
+            style={{ display: "flex", flexWrap: "no-wrap", marginRight: 24 }}
+          >
+            {tools &&
+              tools.map((t) => {
+                return t();
+              })}
           </div>
-          {state.checked.length > 0 && (<div>
-              <Typography variant="button">
-                {`${state.checked.length} sélection${
-                  state.checked.length > 1 ? "s" : ""
-                }`}
-              </Typography>
-              {cf.map((c) => (
-                <Tooltip title={c.label}>
-                  <IconButton
-                    key={`cf${c.label}`}
-                    color="inherit"
-                    onClick={(e) => fcts(dt, c.fct)}
-                  >
-                    <Icon fontSize={width > 600 ? "large" : "medium"}> {c.icon} </Icon>
-                  </IconButton>
-                </Tooltip>
-              ))}
+        </div>
+        {state.checked.length > 0 && (
+          <div>
+            <Typography variant="button">
+              {`${state.checked.length} sélection${
+                state.checked.length > 1 ? "s" : ""
+              }`}
+            </Typography>
+            {cf.map((c) => (
+              <Tooltip title={c.label}>
+                <IconButton
+                  key={`cf${c.label}`}
+                  color="inherit"
+                  onClick={(e) => fcts(dt, c.fct)}
+                >
+                  <Icon fontSize={width > 600 ? "large" : "medium"}>
+                    {" "}
+                    {c.icon}{" "}
+                  </Icon>
+                </IconButton>
+              </Tooltip>
+            ))}
           </div>
         )}
       </div>
       {schema && schema.columns ? (
         <div className={classes.tableContainer} ref={tableComponent}>
           <div
+            key="bar"
             style={{
               //position: "relative",
               display: "flex",
@@ -852,8 +976,8 @@ const ClientTab = (props) => {
             }}
             className="swapBar"
           >
-            {state.cols.length > 1 &&
-            (<div
+            {state.cols.length > 1 && (
+              <div
                 style={{
                   padding: 0,
                   margin: 0,
@@ -861,18 +985,27 @@ const ClientTab = (props) => {
                   justifyContent: "center",
                 }}
               >
-                {state.cols.map((c,i)=>{
-                  return(<IconButton 
-                    onClick={e=>dispatch({type:'colStep',colStep:i})} 
-                    color={state.colStep === i ? "primary" : "default"}
-                  >
-                    <Icon style={state.colStep === i ? {fontSize:"0.8em",opacity:0.75} : {fontSize:"0.6em",opacity:0.6} }>
-                      fiber_manual_record
-                    </Icon>
-                  </IconButton>)
+                {state.cols.map((c, i) => {
+                  return (
+                    <IconButton
+                      onClick={(e) => dispatch({ type: "colStep", colStep: i })}
+                      color={state.colStep === i ? "primary" : "default"}
+                    >
+                      <Icon
+                        style={
+                          state.colStep === i
+                            ? { fontSize: "0.8em", opacity: 0.75 }
+                            : { fontSize: "0.6em", opacity: 0.6 }
+                        }
+                      >
+                        fiber_manual_record
+                      </Icon>
+                    </IconButton>
+                  );
                 })}
-              </div>)}
-          </div> 
+              </div>
+            )}
+          </div>
           <Table id={id} className={classes.table}>
             <TableHead className="swapBar">
               {tabHeader(actualCols || [])}
@@ -885,13 +1018,20 @@ const ClientTab = (props) => {
                   // lignes du tabelaux
                   <React.Fragment>
                     <TableRow
-                      className={stripped && i % 2 === 1 ? classes.evenRows : classes.oddRows}
+                      className={
+                        stripped && i % 2 === 1
+                          ? classes.evenRows
+                          : classes.oddRows
+                      }
                       hover
                       key={`row${i}`}
                     >
                       {cf && cf.length > 0 && (
                         <TableCell
-                          style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
+                          style={{
+                            width: parseInt(baseWidth(width) * 0.5),
+                            padding: 0,
+                          }}
                           component="td"
                         >
                           <Checkbox
@@ -910,36 +1050,54 @@ const ClientTab = (props) => {
                         </TableCell>
                       )}
                       {collapses &&
-                        collapses.map((clp) => (
-                          <TableCell
-                            style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
-                            component="td"
-                          > { (!clp.cond || clp.cond(row)) &&
-                            (<Tooltip title={clp.title}>
-                              <IconButton
-                                aria-label="expand row"
-                                onClick={(e) =>
-                                  dispatch({
-                                    type: "open",
-                                    key: clp.title,
-                                    index: i,
-                                  })
-                                }
+                        collapses.map((clp) => {
+                          return (
+                            !clp.col && (
+                              <TableCell
+                                style={{
+                                  width: parseInt(baseWidth(width) * 0.5),
+                                  padding: 0,
+                                }}
+                                component="td"
                               >
-                                {state.open.filter(
-                                  (op) => op.key === clp.title && op.index === i
-                                ).length > 0 ? (
-                                  <Icon size="large">arrow_drop_down</Icon>
-                                ) : (
-                                  <Icon size="large">arrow_right</Icon>
+                                {(!clp.cond || clp.cond(row)) && (
+                                  <Tooltip title={clp.title}>
+                                    <IconButton
+                                      aria-label="expand row"
+                                      onClick={(e) =>
+                                        dispatch({
+                                          type: "open",
+                                          key: clp.title,
+                                          index: i,
+                                        })
+                                      }
+                                    >
+                                      {clp.cell ? (
+                                        clp.cell(row)
+                                      ) : state.open.filter(
+                                          (op) =>
+                                            op.key === clp.title &&
+                                            op.index === i
+                                        ).length > 0 ? (
+                                        <Icon size="large">
+                                          arrow_drop_down
+                                        </Icon>
+                                      ) : (
+                                        <Icon size="large">arrow_right</Icon>
+                                      )}
+                                    </IconButton>
+                                  </Tooltip>
                                 )}
-                              </IconButton>
-                            </Tooltip>)}
-                          </TableCell>
-                        ))}
+                              </TableCell>
+                            )
+                          );
+                        })}
                       {speedFct ? (
                         <TableCell
-                          style={{ maxWidth: parseInt(baseWidth(width)*0.5), padding: 0 }}
+                          style={{
+                            maxWidth: parseInt(baseWidth(width) * 0.5),
+                            padding: 0,
+                          }}
                           size="small"
                           align="center"
                         >
@@ -951,7 +1109,11 @@ const ClientTab = (props) => {
                               FabProps: {
                                 size: "small",
                                 color: "default",
-                                style: { position: "relative", opacity: 0.8, left: 12 },
+                                style: {
+                                  position: "relative",
+                                  opacity: 0.8,
+                                  left: 12,
+                                },
                               },
                             }}
                             actions={lf.map((f) => {
@@ -968,17 +1130,24 @@ const ClientTab = (props) => {
                         lf.map((f) => (
                           <TableCell
                             size="small"
-                            style={{ width: parseInt(baseWidth(width)*0.5), padding: 0 }}
+                            style={{
+                              width: parseInt(baseWidth(width) * 0.5),
+                              padding: 0,
+                            }}
                           >
                             {f.cond === undefined || f.cond(row) ? (
                               <IconButton
-                                color={f.color || "secondary"}
                                 onClick={(e) => {
                                   f.fct(row);
                                 }}
                               >
                                 <Tooltip title={f.label || "Fonction"}>
-                                  <Icon fontSize="large">{f.icon}</Icon>
+                                  <Icon
+                                    color={f.color || "secondary"}
+                                    fontSize="large"
+                                  >
+                                    {f.icon}
+                                  </Icon>
                                 </Tooltip>
                               </IconButton>
                             ) : (
@@ -994,6 +1163,7 @@ const ClientTab = (props) => {
 
                       {Object.keys(schema.columns).map((col) => {
                         let length = schema.columns[col].length || 2;
+                        let collapse = collapses.find((c) => c.col === col);
                         if (
                           actualCols &&
                           actualCols.includes(col) &&
@@ -1013,7 +1183,9 @@ const ClientTab = (props) => {
                               onDoubleClick={(e) => {
                                 if (
                                   dbClickFilter &&
-                                  filterKeys && (filterKeys.length === 0 || filterKeys.includes(col)) &&
+                                  filterKeys &&
+                                  (filterKeys.length === 0 ||
+                                    filterKeys.includes(col)) &&
                                   ["text", "number", "date"].includes(
                                     globalType(schema.columns[col].type)
                                   )
@@ -1026,7 +1198,7 @@ const ClientTab = (props) => {
                                       "text"
                                         ? [
                                             {
-                                              label: col,
+                                              col,
                                               operator: schema.columns[
                                                 col
                                               ].type.includes("foreign")
@@ -1037,12 +1209,12 @@ const ClientTab = (props) => {
                                           ]
                                         : [
                                             {
-                                              label: col,
+                                              col,
                                               operator: "<=",
                                               value: row[col],
                                             },
                                             {
-                                              label: col,
+                                              col,
                                               operator: ">=",
                                               value: row[col],
                                             },
@@ -1053,65 +1225,129 @@ const ClientTab = (props) => {
                               }}
                               component="td"
                             >
-                              {cellFunctions[col] ? (
-                                cellFunctions[col](
-                                  row[col],
-                                  row,
-                                  schema.columns[col]
-                                )
-                              ) : globalType(schema.columns[col].type) ===
-                                "color" ? (
-                                <Avatar style={{ backgroundColor: row[col] }} />
-                              ) : globalType(schema.columns[col].type) ===
-                                "image" ? (
-                                <Avatar
-                                  alt={`img ${col}${i}`}
-                                  src={row[col] && row[col].split(",")[0]}
-                                />
-                              ) : (
-                                <Typography variant="body2">
-                                  { schema.columns[col].type.includes("foreign")
-                                  ? (schema.columns[col]?.possibles?.find(p=>p.value===row[col]) ? schema.columns[col].possibles.find(p=>p.value===row[col])['label'] : row[col])
-                                  :( schema.columns[col].type === "address" 
-                                    ? extractAddress(row[col]) 
-                                    : row[col]+(schema.columns[col].suffixe || '')
-                                  )}
-                                </Typography>
-                              )}
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                }}
+                              >
+                                {cellFunctions[col] ? (
+                                  cellFunctions[col](
+                                    row[col],
+                                    row,
+                                    schema.columns[col]
+                                  )
+                                ) : globalType(schema.columns[col].type) ===
+                                  "color" ? (
+                                  <Avatar
+                                    style={{ backgroundColor: row[col] }}
+                                  />
+                                ) : globalType(schema.columns[col].type) ===
+                                  "image" ? (
+                                  <Avatar
+                                    alt={`img ${col}${i}`}
+                                    src={row[col] && row[col].split(",")[0]}
+                                  />
+                                ) : (
+                                  <Typography variant="body2">
+                                    {schema.columns[col].type.includes(
+                                      "foreign"
+                                    )
+                                      ? schema.columns[col]?.possibles?.find(
+                                          (p) => p.value === row[col]
+                                        )
+                                        ? schema.columns[col].possibles.find(
+                                            (p) => p.value === row[col]
+                                          )["label"]
+                                        : row[col]
+                                      : schema.columns[col].type === "address"
+                                      ? extractAddress(row[col])
+                                      : row[col] +
+                                        (schema.columns[col].suffixe || "")}
+                                  </Typography>
+                                )}
+                                {collapse && (
+                                  <Tooltip
+                                    style={{ display: "float", right: 2 }}
+                                    title={collapse?.title}
+                                  >
+                                    <IconButton
+                                      aria-label="expand row"
+                                      onClick={(e) =>
+                                        dispatch({
+                                          type: "open",
+                                          key: collapse.title,
+                                          index: i,
+                                        })
+                                      }
+                                    >
+                                      {state.open.filter(
+                                        (op) =>
+                                          op.key === collapse.title &&
+                                          op.index === i
+                                      ).length > 0 ? (
+                                        <Icon size="large">
+                                          arrow_drop_down
+                                        </Icon>
+                                      ) : (
+                                        <Icon size="large">arrow_right</Icon>
+                                      )}
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+                              </div>
                             </TableCell>
                           );
                         }
                       })}
                     </TableRow>
                     {collapses &&
-                      collapses.map((clp) =>{
-                        if(state.open.filter( (op) => op.key === clp.title && op.index === i).length > 0){
-                          return (<TableRow
-                          className={stripped && i % 2 === 1 ? classes.evenRows : classes.oddRows}
-                          hover
-                        >
-                          {/*<TableCell style={{ padding: paddings }}></TableCell>*/}
-                          <TableCell
-                            style={{ padding: paddings }}
-                            colSpan={parseInt(
-                              (cf ? 1 : 0) + (lf && lf.length > 0 ? (speedFct ? 1 : lf.length) : 0) + state.cols[state.colStep].length + 1
-                            )}
-                          >
-                            <Collapse
-                              in={
-                                state.open.filter(
-                                  (op) => op.key === clp.title && op.index === i
-                                ).length > 0
+                      collapses.map((clp) => {
+                        if (
+                          state.open.filter(
+                            (op) => op.key === clp.title && op.index === i
+                          ).length > 0
+                        ) {
+                          return (
+                            <TableRow
+                              className={
+                                stripped && i % 2 === 1
+                                  ? classes.evenRows
+                                  : classes.oddRows
                               }
-                              timeout="auto"
-                              unmountOnExit
+                              hover
                             >
-                              {clp.fct(row,schema)}
-                            </Collapse>
-                          </TableCell>
-                        </TableRow>)
+                              {/*<TableCell style={{ padding: paddings }}></TableCell>*/}
+                              <TableCell
+                                style={{ padding: paddings }}
+                                colSpan={parseInt(
+                                  (cf ? 1 : 0) +
+                                    (lf && lf.length > 0
+                                      ? speedFct
+                                        ? 1
+                                        : lf.length
+                                      : 0) +
+                                    state.cols[state.colStep].length +
+                                    1
+                                )}
+                              >
+                                <Collapse
+                                  in={
+                                    state.open.filter(
+                                      (op) =>
+                                        op.key === clp.title && op.index === i
+                                    ).length > 0
+                                  }
+                                  timeout="auto"
+                                  unmountOnExit
+                                >
+                                  {clp.fct(row, schema)}
+                                </Collapse>
+                              </TableCell>
+                            </TableRow>
+                          );
                         }
-                    })}
+                      })}
                   </React.Fragment>
                 ))}
               </TableBody>
@@ -1144,7 +1380,7 @@ const ClientTab = (props) => {
                 }*/
                 hover
               >
-                <TableCell style={{ padding: 0, display:'flex' }}>
+                <TableCell style={{ padding: 0, display: "flex" }}>
                   <Tooltip title="Mettre à zéro">
                     <IconButton
                       color="secondary"
@@ -1155,16 +1391,18 @@ const ClientTab = (props) => {
                       </Icon>
                     </IconButton>
                   </Tooltip>
-                  {width > 600 && <Tooltip title="Inverser le filtrage">
-                    <IconButton
-                      color={state.inverseFilter ? "secondary" : "inherit"}
-                      onClick={() => dispatch({ type: "inverseFilter" })}
-                    >
-                      <Icon size="large" style={{ fontSize: "1.25em" }}>
-                        swap_calls
-                      </Icon>
-                    </IconButton>
-                  </Tooltip>}
+                  {width > 600 && (
+                    <Tooltip title="Inverser le filtrage">
+                      <IconButton
+                        color={state.inverseFilter ? "secondary" : "inherit"}
+                        onClick={() => dispatch({ type: "inverseFilter" })}
+                      >
+                        <Icon size="large" style={{ fontSize: "1.25em" }}>
+                          swap_calls
+                        </Icon>
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </TableCell>
                 <TablePagination
                   count={dt.length}
@@ -1218,6 +1456,6 @@ ClientTab.defaultProps = {
   speedFct: false,
   dbClickFilter: true,
   paddings: 0,
-  checkedFunctions: []
+  checkedFunctions: [],
 };
 export default ClientTab;
